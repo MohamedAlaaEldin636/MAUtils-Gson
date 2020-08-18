@@ -1,0 +1,28 @@
+<resources>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="colorAccent">@color/accent</item>
+
+        <item name="android:windowBackground">@color/background</item>
+
+        <item name="appBarLayoutStyle">@style/MAAppBarLayout</item>
+
+        <item name="toolbarStyle">@style/MAToolbarStyle</item>
+    </style>
+
+    <style name="MAAppBarLayout" parent="@style/Widget.MaterialComponents.AppBarLayout.Primary">
+        <item name="elevation">@dimen/toolbar_elevation</item>
+    </style>
+
+    <style name="MAToolbarStyle" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/primary</item>
+
+        <item name="titleTextColor">@android:color/white</item>
+        <item name="subtitleTextColor">@color/toolbar_subtitle</item>
+
+        <item name="elevation">@dimen/toolbar_elevation</item>
+    </style>
+
+</resources>
