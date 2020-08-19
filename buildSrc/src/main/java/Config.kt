@@ -69,8 +69,9 @@ object Config {
 
         const val timber = "com.jakewharton.timber:timber:${Versions.timber}"
 
-        const val java_poet = "com.squareup:javapoet:${Versions.java_poet}"
         const val kotlin_poet = "com.squareup:kotlinpoet:${Versions.kotlin_poet}"
+
+        const val gson = "com.google.code.gson:gson:${Versions.gson}"
     }
 
     object TestLibs {
@@ -106,8 +107,9 @@ object Config {
 
         const val timber = "4.7.1"
 
-        const val java_poet = "1.13.0"
         const val kotlin_poet = "1.6.0"
+
+        const val gson = "2.8.6"
 
         // Testing
         const val test_junit = "4.12"

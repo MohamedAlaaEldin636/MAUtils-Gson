@@ -47,6 +47,13 @@ android {
 }
 
 dependencies {
+    // Project Modules
+    api(project(Config.ProjectModules.mautils_gson_core_annotation)) // Can be excluded
+
+    api(Config.Libs.kotlin_reflect)
+
+    api(Config.Libs.gson)
+
     testImplementation(project(Config.ProjectModules.core_1, "integrateTestImplementations"))
     androidTestImplementation(project(Config.ProjectModules.core_1, "integrateAndroidTestImplementations"))
 }
