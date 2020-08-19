@@ -34,6 +34,10 @@ object Config {
 
         const val kotlinKapt = "kapt"
 
+        const val javaOrKotlinLibrary = "java-library"
+
+        const val kotlin = "kotlin"
+
     }
 
     object BuildPlugins {
@@ -46,10 +50,16 @@ object Config {
         const val core_1 = ":core_1"
         const val core_2 = ":core_2"
         const val feature_flow_1 = ":feature:flow_1"
+
+        const val mautils_gson_core = ":mautils_gson_core"
+        const val mautils_gson_core_annotation = ":mautils_gson_core_annotation"
+        const val mautils_gson_core_processor = ":mautils_gson_core_processor"
     }
 
     object Libs {
         const val kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
+
+        const val kotlin_reflect = "org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}"
 
         const val app_compat = "androidx.appcompat:appcompat:${Versions.app_compat}"
 
@@ -58,6 +68,9 @@ object Config {
         const val material_components = "com.google.android.material:material:${Versions.material_components}"
 
         const val timber = "com.jakewharton.timber:timber:${Versions.timber}"
+
+        const val java_poet = "com.squareup:javapoet:${Versions.java_poet}"
+        const val kotlin_poet = "com.squareup:kotlinpoet:${Versions.kotlin_poet}"
     }
 
     object TestLibs {
@@ -92,6 +105,9 @@ object Config {
         const val material_components = "1.2.0"
 
         const val timber = "4.7.1"
+
+        const val java_poet = "1.13.0"
+        const val kotlin_poet = "1.6.0"
 
         // Testing
         const val test_junit = "4.12"
