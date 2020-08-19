@@ -1,7 +1,7 @@
 package com.maproductions.lib.mautils_gson_core_annotation
 
 /**
- * - Shouldn't be used except by this and mautils_gson_core modules isa.
+ * - Shouldn't be used except by this & mautils_gson_core modules isa.
  */
 @Suppress("ClassName")
 object _AnnotationsConstants {

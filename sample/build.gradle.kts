@@ -56,6 +56,9 @@ dependencies {
     // Project Modules
     implementation(project(Config.ProjectModules.feature_flow_1))
 
+    implementation(project(Config.ProjectModules.mautils_gson_core_annotation))
+    kapt(project(Config.ProjectModules.mautils_gson_core_processor))
+
     testImplementation(project(Config.ProjectModules.core_1, "integrateTestImplementations"))
     androidTestImplementation(project(Config.ProjectModules.core_1, "integrateAndroidTestImplementations"))
 }

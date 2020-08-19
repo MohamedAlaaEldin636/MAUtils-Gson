@@ -1,17 +1,18 @@
 package com.maproductions.lib.mautils_gson_core_processor.extensions
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.STAR
+import com.squareup.kotlinpoet.asTypeName
 
 fun buildFunSpec(classesFullNames: List<String>): FunSpec {
-    val returnType = KotlinpoetUtils.parameterizedTypeName(
-        List::class.asTypeName(),
-        Class::class.asTypeName(),
-        Any::class.asTypeName().copy(true)
-    )
-
     val itemType = KotlinpoetUtils.parameterizedTypeName(
         Class::class.asTypeName(),
-        Any::class.asTypeName().copy(true)
+        STAR,
+    )
+
+    val returnType = KotlinpoetUtils.parameterizedTypeName(
+        List::class.asTypeName(),
+        itemType,
     )
 
     val builder = FunSpec.builder("getListOfClasses").apply {
@@ -20,22 +21,7 @@ fun buildFunSpec(classesFullNames: List<String>): FunSpec {
 
         // Code isa.
         addStatement(
-            "val list = mutableListOf<%T>()", itemType
-        )
-
-        for (fullName in classesFullNames) {
-            addStatement(
-                """
-                |kotlin.runCatching { Class.forName(%S) }.getOrNull()?.apply {
-                |   list += this
-                |}
-                """.trimMargin(),
-                fullName
-            )
-        }
-
-        addStatement(
-            "return list"
+            "return listOf(${classesFullNames.joinToString { "$it::class.java" }})"
         )
     }
 

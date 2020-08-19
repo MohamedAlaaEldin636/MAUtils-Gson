@@ -12,12 +12,8 @@ dependencies {
     implementation(project(Config.ProjectModules.mautils_gson_core_annotation))
 
     implementation(Config.Libs.kotlin_stdlib)
-    implementation(Config.Libs.kotlin_reflect)
 
-    implementation(Config.Libs.java_poet)
     implementation(Config.Libs.kotlin_poet)
-
-    implementation("io.github.classgraph:classgraph:4.8.87")
 }
 
 java {

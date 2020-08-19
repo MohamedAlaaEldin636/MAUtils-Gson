@@ -54,6 +54,8 @@ dependencies {
     // Project Modules
     api(project(Config.ProjectModules.core_2))
 
+    implementation(project(Config.ProjectModules.mautils_gson_core_annotation))
+
     testImplementation(project(Config.ProjectModules.core_1, "integrateTestImplementations"))
     androidTestImplementation(project(Config.ProjectModules.core_1, "integrateAndroidTestImplementations"))
 }

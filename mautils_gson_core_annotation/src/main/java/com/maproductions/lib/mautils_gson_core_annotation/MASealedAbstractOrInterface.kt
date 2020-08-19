@@ -20,7 +20,12 @@ package com.maproductions.lib.mautils_gson_core_annotation
  *
  * - Not only that but also if a field inside a class with AbstractClass as a type
  * that class can be serialized/deserialized correctly without any problem isa.
+ *
+ * ### Limitations
+ * - You need to use processor of this annotation in the "app" module only isa.
+ *
+ * @see MAProviderOfSealedAbstractOrInterface
  */
 @Retention(AnnotationRetention.BINARY)
-@Target(AnnotationTarget.TYPE)
+@Target(AnnotationTarget.CLASS)
 annotation class MASealedAbstractOrInterface

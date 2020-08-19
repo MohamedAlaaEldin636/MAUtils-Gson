@@ -53,6 +53,8 @@ android {
 dependencies {
     api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
+    implementation(project(Config.ProjectModules.mautils_gson_core_annotation))
+
     api(Config.Libs.kotlin_stdlib)
 
     api(Config.Libs.app_compat)
