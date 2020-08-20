@@ -1,5 +1,5 @@
 # MAUtils-Gson
-TODO badge jitpack
+[![](https://jitpack.io/v/MohamedAlaaEldin636/MAUtils-Gson.svg)](https://jitpack.io/#MohamedAlaaEldin636/MAUtils-Gson)
 [![API](https://img.shields.io/badge/API-16%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=16)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
@@ -8,8 +8,8 @@ Android Library built on top of [Gson](https://github.com/google/gson) to provid
 # Contents [▴](#mautils-gson)
 
 - [Install](#install-)
-    - [Jitpack Environment](jitpack-environment-)
-    - [Library](library-)
+    - [Jitpack Environment](#jitpack-environment-)
+    - [Library](#library-)
         - [Case of using `core` module only](#case-of-using-core-module-only-)
         - [Case of using `core` & `core_processor` modules](#case-of-using-core--core_processor-modules-)
         
@@ -28,8 +28,8 @@ Android Library built on top of [Gson](https://github.com/google/gson) to provid
 
 ## Install [▴](#contents-)
 
-- [Jitpack Environment](jitpack-environment-)
-- [Library](library-)
+- [Jitpack Environment](#jitpack-environment-)
+- [Library](#library-)
     - [Case of using `core` module only](#case-of-using-core-module-only-)
     - [Case of using `core` & `core_processor` modules](#case-of-using-core--core_processor-modules-)
 
@@ -50,6 +50,8 @@ allprojects {
 
 - Note this library is divided into 3 modules, So it's either you wanna use the core functionality only or with the annotation processor as well.
 
+- X.Y.Z denotes app version which is [![](https://jitpack.io/v/MohamedAlaaEldin636/MAUtils-Gson.svg)](https://jitpack.io/#MohamedAlaaEldin636/MAUtils-Gson)
+
 - [Case of using `core` module only](#case-of-using-core-module-only-)
 - [Case of using `core` & `core_processor` modules](#case-of-using-core--core_processor-modules-)
 
@@ -64,7 +66,7 @@ plugins {
 }
 // ...
 dependencies {
-    implementation("TODO AFTER BEING DONE BY JITPACK CHECK HERE.")
+    implementation("com.github.MohamedAlaaEldin636.MAUtils-Gson:mautils_gson_core:X.Y.Z")
     // ...
 }
 ```
@@ -84,10 +86,10 @@ plugins {
 }
 // ...
 dependencies {
-    implementation("TODO AFTER BEING DONE BY JITPACK CHECK HERE.")
+    implementation("com.github.MohamedAlaaEldin636.MAUtils-Gson:mautils_gson_core:X.Y.Z")
     
     // REMEMBER below processor MUST only be added in app module.
-    kapt("TODO AFTER BEING DONE BY JITPACK CHECK HERE.")
+    kapt("com.github.MohamedAlaaEldin636.MAUtils-Gson:mautils_gson_core_processor:X.Y.Z")
     // ...
 }
 ```
