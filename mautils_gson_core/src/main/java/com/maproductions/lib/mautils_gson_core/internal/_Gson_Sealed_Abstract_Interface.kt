@@ -15,6 +15,7 @@
 
 package com.maproductions.lib.mautils_gson_core.internal
 
+import android.util.Log
 import com.google.gson.*
 import com.google.gson.internal.`$Gson$Types`
 import com.maproductions.lib.mautils_gson_core.*
@@ -29,8 +30,8 @@ import java.lang.reflect.Field
 import java.lang.reflect.Type
 import kotlin.reflect.full.isSubclassOf
 
-private const val KEY_CLASS_FULL_NAME = "KEY_CLASS_FULL_NAME"
-private const val KEY_NORMAL_SERIALIZATION_JSON_STRING = "KEY_NORMAL_SERIALIZATION_JSON_STRING"
+internal const val KEY_CLASS_FULL_NAME = "KEY_CLASS_FULL_NAME"
+internal const val KEY_NORMAL_SERIALIZATION_JSON_STRING = "KEY_NORMAL_SERIALIZATION_JSON_STRING"
 
 internal class JsonSerializerForSealedClasses : JsonSerializer<Any> {
 
@@ -42,6 +43,8 @@ internal class JsonSerializerForSealedClasses : JsonSerializer<Any> {
         if (src == null) {
             return null
         }
+
+        Log.w("Lib code 321", "${src.javaClass}, src $src")
 
         val innerJsonObject = JSONObject()
         runCatching {
@@ -58,6 +61,12 @@ internal class JsonSerializerForSealedClasses : JsonSerializer<Any> {
                 var jsonValue = fieldInstance.toJsonOrNullWithFullTypeInfo(field.genericType)
                 val jsonKey = field.name
 
+                // todo see generic class.
+                /*
+                1. kda law el field nfso feh haga how to know isa ?!
+                 */
+                Log.d("Lib code 321", "Generic ${field.genericType}, ${field.type != fieldInstance?.javaClass}, ${field.type} != ${fieldInstance?.javaClass}, " +
+                        "field.needSpecialSerialize() ${field.needSpecialSerialize()}, current $jsonValue")
                 if (field.type != fieldInstance?.javaClass) {
                     val isSubclassOfAnnotatedClasses = allAnnotatedClasses?.any {
                         field.type.kotlin.isSubclassOf(it.kotlin)
@@ -68,6 +77,7 @@ internal class JsonSerializerForSealedClasses : JsonSerializer<Any> {
                 }else if (field.needSpecialSerialize()) {
                     jsonValue = serializeSpecialCase(fieldInstance, context)?.toString()
                 }
+                Log.d("Lib code 321", "adjusted jsonValue $jsonValue")
 
                 innerJsonObject.put(
                     jsonKey,
@@ -89,6 +99,10 @@ internal class JsonSerializerForSealedClasses : JsonSerializer<Any> {
         val jsonObject = JSONObject()
         jsonObject.put(KEY_CLASS_FULL_NAME, src.javaClass.name)
         jsonObject.put(KEY_NORMAL_SERIALIZATION_JSON_STRING, innerJsonObject)
+
+        if (JsonParser().parse(jsonObject.toString()) != JsonParser.parseString(jsonObject.toString())) {
+            Log.i("Lib code 321", "${JsonParser().parse(jsonObject.toString())}, ${JsonParser.parseString(jsonObject.toString())}")
+        }
 
         return runCatching { JsonParser.parseString(jsonObject.toString()) }.getOrNull()
     }
@@ -116,6 +130,8 @@ internal class JsonSerializerForSealedClasses : JsonSerializer<Any> {
                 var jsonValue = fieldInstance.toJsonOrNullWithFullTypeInfo(field.genericType)
                 val jsonKey = field.name
 
+                Log.v("Lib code 321", "${field.type != fieldInstance?.javaClass}, ${field.type} != ${fieldInstance?.javaClass}, " +
+                        "current $jsonValue")
                 if (field.type != fieldInstance?.javaClass) {
                     val isSubclassOfAnnotatedClasses = allAnnotatedClasses?.any {
                         field.type.kotlin.isSubclassOf(it.kotlin)
@@ -127,6 +143,7 @@ internal class JsonSerializerForSealedClasses : JsonSerializer<Any> {
                 }else if (field.needSpecialSerialize()) {
                     jsonValue = serializeSpecialCase(fieldInstance, context)?.toString()
                 }
+                Log.v("Lib code 321", "adjusted jsonValue $jsonValue")
 
                 innerJsonObject.put(
                     jsonKey,

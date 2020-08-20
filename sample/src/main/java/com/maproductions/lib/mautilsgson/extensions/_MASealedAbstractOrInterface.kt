@@ -10,9 +10,7 @@ import com.maproductions.mohamedalaa.core.model.UICountry
 @MASealedAbstractOrInterface
 @MAProviderOfSealedAbstractOrInterface(
     DataResult::class,
-    UICountry::class
+    UICountry::class,
+    DataResult.Error::class
 )
 interface _ProviderOfSealedAbstractOrInterface
-
-@MAProviderOfSealedAbstractOrInterface(String::class)
-interface _I2

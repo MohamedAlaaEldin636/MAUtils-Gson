@@ -15,9 +15,12 @@
 
 package com.maproductions.lib.mautils_gson_core
 
+import android.util.Log
 import com.google.gson.*
 import com.maproductions.lib.mautils_gson_core.internal.JsonDeserializerForSealedClasses
 import com.maproductions.lib.mautils_gson_core.internal.JsonSerializerForSealedClasses
+import com.maproductions.lib.mautils_gson_core.internal.MAJsonDeserializer
+import com.maproductions.lib.mautils_gson_core.internal.MAJsonSerializer
 import com.maproductions.lib.mautils_gson_core.java.GsonConverter
 import com.maproductions.lib.mautils_gson_core_annotation._AnnotationsConstants
 import kotlin.Exception
@@ -83,8 +86,11 @@ inline fun <reified E> String?.fromJsonOrNull(gson: Gson? = null): E? = this?.ru
  * @see fromJson
  * @see toJsonOrNull
  */
-inline fun <reified E> String?.fromJson(gson: Gson? = null): E = fromJsonOrNull(gson)
-    ?: throw RuntimeException("Cannot convert $this to object of type ${E::class}")
+inline fun <reified E> String?.fromJson(gson: Gson? = null): E {
+    Log.e("Lib code 32", "Cannot convert $this to object of type ${E::class}")
+    return fromJsonOrNull(gson)
+        ?: throw RuntimeException("Cannot convert $this to object of type ${E::class}")
+}
 
 /**
  * - Converts `receiver` object to a JSON String OR null in case of any error isa.
@@ -115,14 +121,14 @@ inline fun <reified E> E?.toJson(gson: Gson? = null): String = toJsonOrNull(gson
 // ---- Internal fun isa.
 
 @Suppress("UNCHECKED_CAST")
-internal val allAnnotatedClasses: List<Class<*>>? by lazy {
+internal val allAnnotatedClasses: List<Class<*>> by lazy {
     runCatching {
         val kClass = Class.forName(_AnnotationsConstants.generatedMASealedAbstractOrInterfaceFullName).kotlin
 
         val function = kClass.declaredFunctions.first()
 
         function.call(kClass.objectInstance) as List<Class<*>>
-    }.getOrNull()
+    }.getOrNull() ?: emptyList()
 }
 
 /**
@@ -159,8 +165,8 @@ internal fun Gson.addTypeAdapters(): Gson {
 // ---- Private fun isa.
 
 private fun GsonBuilder.addTypeAdapters() {
-    allAnnotatedClasses?.forEach {
-        registerTypeAdapter(it, JsonSerializerForSealedClasses())
-        registerTypeAdapter(it, JsonDeserializerForSealedClasses())
+    allAnnotatedClasses.forEach {
+        registerTypeAdapter(it, MAJsonSerializer()/*JsonSerializerForSealedClasses()*/)
+        registerTypeAdapter(it, MAJsonDeserializer()/*JsonDeserializerForSealedClasses()*/)
     }
 }

@@ -56,6 +56,7 @@ dependencies {
     // Project Modules
     implementation(project(Config.ProjectModules.feature_flow_1))
 
+    implementation(project(Config.ProjectModules.mautils_gson_core))
     implementation(project(Config.ProjectModules.mautils_gson_core_annotation))
     kapt(project(Config.ProjectModules.mautils_gson_core_processor))
 

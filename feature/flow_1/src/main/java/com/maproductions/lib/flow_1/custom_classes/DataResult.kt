@@ -1,13 +1,18 @@
 package com.maproductions.lib.flow_1.custom_classes
 
-import com.maproductions.mohamedalaa.core.model.UICountry
-
-/**
- * todo see [UICountry], u need to annotate this class as well isa.
- */
 sealed class DataResult<T> {
 
-    class Loading<T> : DataResult<T>()
+    class Loading<T> : DataResult<T>() {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is Loading<*>) return false
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return javaClass.hashCode()
+        }
+    }
 
     data class Success<T>(val value: T) : DataResult<T>()
 
