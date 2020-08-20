@@ -19,7 +19,11 @@ plugins {
     id(Config.Plugins.javaOrKotlinLibrary)
 
     id(Config.Plugins.kotlin)
+
+    id(Config.Plugins.jitpack)
 }
+
+group = Config.Group.github
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))

@@ -53,12 +53,20 @@ object Config {
 
         const val kotlin = "kotlin"
 
+        const val jitpack = "com.github.dcendents.android-maven"
+
+    }
+
+    object Group {
+        const val github = "com.github.MohamedAlaaEldin636"
     }
 
     object BuildPlugins {
         const val androidGradle = "com.android.tools.build:gradle:${Versions.gradle}"
 
         const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
+
+        const val jitpack = "com.github.dcendents:android-maven-gradle-plugin:${Versions.jitpack}"
     }
 
     object ProjectModules {
@@ -125,6 +133,8 @@ object Config {
         const val kotlin_poet = "1.6.0"
 
         const val gson = "2.8.6"
+
+        const val jitpack = "2.1"
 
         // Testing
         const val test_junit = "4.12"

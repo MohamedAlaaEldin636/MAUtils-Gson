@@ -84,6 +84,27 @@ class GsonComplexConversions {
         assertEquals(r_j_error2, error2)
     }
 
+    @Test
+    fun withTypeParams() {
+        val v1: DataResult<UICountry> = provideDataSuccess2()
+
+        val j1 = v1.toJson()
+
+        val r1 = j1.fromJson<DataResult<UICountry>>()
+
+        assertEquals(v1, r1)
+    }
+
+    private fun provideDataSuccess2() = DataResult.Success2(
+        provideUICountryGeoApi(),
+        listOf(
+            Pair(
+                3.2f to 9.54,
+                22,
+            ),
+        ),
+    )
+
     private fun provideSuccessGeoApi(): DataResult<UICountry> {
         return DataResult.Success(
             UICountry.RelatedWithRegionsCountry(

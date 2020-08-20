@@ -13,32 +13,11 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.maproductions.lib.mautilsgson.model
 
-buildscript {
-    
-    repositories {
-        google()
-        jcenter()
-    }
-    
-    dependencies {
-        classpath(Config.BuildPlugins.androidGradle)
-
-        classpath(Config.BuildPlugins.kotlinGradlePlugin)
-
-        classpath(Config.BuildPlugins.jitpack)
-    }
-
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-    }
-}
-
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+/**
+ * Created by <a href="https://github.com/MohamedAlaaEldin636">Mohamed</a> on 8/20/2020.
+ *
+ */
+object SomeObject {
 }

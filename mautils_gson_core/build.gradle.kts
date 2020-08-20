@@ -21,7 +21,11 @@ plugins {
     kotlin(Config.Plugins.kotlinAndroidExtensions)
 
     kotlin(Config.Plugins.kotlinKapt)
+
+    id(Config.Plugins.jitpack)
 }
+
+group = Config.Group.github
 
 android {
     compileSdkVersion(Config.Android.compileSdk)

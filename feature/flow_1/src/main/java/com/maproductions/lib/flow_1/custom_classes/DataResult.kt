@@ -31,6 +31,8 @@ sealed class DataResult<T> {
 
     data class Success<T>(val value: T) : DataResult<T>()
 
+    data class Success2<T>(val value: T, val list: List<Pair<Pair<Float, Double>, Int>>) : DataResult<T>()
+
     sealed class Error<T>(open val userErrorMsg: String) : DataResult<T>() {
 
         data class NoInternetConnection<T>(override val userErrorMsg: String): Error<T>(userErrorMsg)
