@@ -1,3 +1,18 @@
+/*
+ * Copyright © 2020 Mohamed Alaa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package com.maproductions.lib.mautilsgson
 
 import androidx.appcompat.app.AppCompatActivity
@@ -17,21 +32,16 @@ class MainActivity : AppCompatActivity() {
         dataResultAsGson()
     }
 
-    // todo error in conversion isa ?!
     @Suppress("LocalVariableName")
     fun dataResultAsGson() {
         val d2 = a1()
-        val j2 = d2.toJson().apply(Timber::e).apply {
-            Timber.e("this $this")
-        }
+        val j2 = d2.toJson().apply(Timber::e)
         val r2: UICountry? = j2.fromJson()
 
         Timber.e(specialAssertion(r2, d2))
 
         val d1 = provideSuccess1()
-        val j1 = d1.toJson().apply(Timber::e).apply {
-            Timber.e("this $this")
-        }
+        val j1 = d1.toJson().apply(Timber::e)
         val r1: DataResult<String>? = j1.fromJson()
 
         Timber.e(specialAssertion(r1, d1))
@@ -48,8 +58,8 @@ class MainActivity : AppCompatActivity() {
 
         val load = provideLoading()
 
-        val j_data1 = data1.toJson()
-        val j_data2 = data2.toJson()
+        val j_data1 = data1.toJson().apply(Timber::e)
+        val j_data2 = data2.toJson().apply(Timber::e)
 
         val j_error0 = error0.toJson()
         val j_error1 = error1.toJson()
@@ -65,13 +75,11 @@ class MainActivity : AppCompatActivity() {
 
         val r_j_load: DataResult<UICountry> = j_load.fromJson()
 
-        Timber.e(specialAssertion(r_j_data1, data1)) // todo 1st only isa.
-        Timber.e(specialAssertion(r_j_data2, data2)) // todo 1st only isa.
+        Timber.e(specialAssertion(r_j_data1, data1))
+        Timber.e(specialAssertion(r_j_data2, data2))
 
-        Timber.e(specialAssertion(r_j_load, load)) // todo 1st only isa.
+        Timber.e(specialAssertion(r_j_load, load))
 
-        // todo 2nd still can't isa. -> add lots of logs in deserialization ti ==o see why no proper deserialization
-        //  although the serialization is like what expected el7 w isa.
         val r_j_error0: DataResult<UICountry> = j_error0.fromJson()
         val r_j_error1: DataResult<UICountry> = j_error1.fromJson()
         val r_j_error2: DataResult<UICountry> = j_error2.fromJson()
@@ -85,10 +93,6 @@ class MainActivity : AppCompatActivity() {
         Timber.e(specialAssertion(r_j_error3, error3))
         Timber.e(specialAssertion(r_j_error4, error4))
         Timber.e(specialAssertion(r_j_error5, error5))
-
-        // todo el7 solved now clean todos logs timbers etc... isa. and expose this specific example on github
-        //  to show how complex this lib can handle, also in deserialization same code in 1 function isa,
-        //  and add kotlin constructors above as well isa.
     }
 
     private fun <T> specialAssertion(expected: T, actual: T): String {
@@ -104,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     private fun provideSuccessGeoApi(): DataResult<UICountry> {
         return DataResult.Success(
             UICountry.RelatedWithRegionsCountry(
-                false,
+                //false,
                 "code",
                 "name",
                 "",
@@ -116,7 +120,7 @@ class MainActivity : AppCompatActivity() {
     private fun provideSuccessRestApi(): DataResult<UICountry> {
         return DataResult.Success(
             UICountry.SmallInfoCountry(
-                true,
+                //true,
                 "a2",
                 "a3",
                 "name",

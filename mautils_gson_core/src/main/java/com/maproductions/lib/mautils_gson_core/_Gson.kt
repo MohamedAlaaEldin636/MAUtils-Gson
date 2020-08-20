@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Mohamed Alaa
+ * Copyright © 2020 Mohamed Alaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
 
 package com.maproductions.lib.mautils_gson_core
 
-import android.util.Log
 import com.google.gson.*
-import com.maproductions.lib.mautils_gson_core.internal.JsonDeserializerForSealedClasses
-import com.maproductions.lib.mautils_gson_core.internal.JsonSerializerForSealedClasses
 import com.maproductions.lib.mautils_gson_core.internal.MAJsonDeserializer
 import com.maproductions.lib.mautils_gson_core.internal.MAJsonSerializer
 import com.maproductions.lib.mautils_gson_core.java.GsonConverter
@@ -86,11 +83,8 @@ inline fun <reified E> String?.fromJsonOrNull(gson: Gson? = null): E? = this?.ru
  * @see fromJson
  * @see toJsonOrNull
  */
-inline fun <reified E> String?.fromJson(gson: Gson? = null): E {
-    Log.e("Lib code 32", "Cannot convert $this to object of type ${E::class}")
-    return fromJsonOrNull(gson)
-        ?: throw RuntimeException("Cannot convert $this to object of type ${E::class}")
-}
+inline fun <reified E> String?.fromJson(gson: Gson? = null): E = fromJsonOrNull(gson)
+    ?: throw RuntimeException("Cannot convert $this to object of type ${E::class}")
 
 /**
  * - Converts `receiver` object to a JSON String OR null in case of any error isa.
@@ -166,7 +160,7 @@ internal fun Gson.addTypeAdapters(): Gson {
 
 private fun GsonBuilder.addTypeAdapters() {
     allAnnotatedClasses.forEach {
-        registerTypeAdapter(it, MAJsonSerializer()/*JsonSerializerForSealedClasses()*/)
-        registerTypeAdapter(it, MAJsonDeserializer()/*JsonDeserializerForSealedClasses()*/)
+        registerTypeAdapter(it, MAJsonSerializer())
+        registerTypeAdapter(it, MAJsonDeserializer())
     }
 }

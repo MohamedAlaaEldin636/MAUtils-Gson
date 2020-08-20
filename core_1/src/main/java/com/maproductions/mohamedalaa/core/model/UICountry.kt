@@ -1,16 +1,27 @@
+/*
+ * Copyright © 2020 Mohamed Alaa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+
+@file:Suppress("unused")
+
 package com.maproductions.mohamedalaa.core.model
 
-/*
-todo s
-1. annotate with annotation so it can be used with .toJson()/.fromJson() isa.
-2. try adding props in sealed class ex. sealed class UICountry(var isBookmarked: Boolean = false)
-with 1 of the subclasses add true isa.
- */
-sealed class UICountry {
+sealed class UICountry(
+    var isBookmarked: Boolean = false,
+) {
 
     data class RelatedWithRegionsCountry(
-        var isBookmarked: Boolean,
-
         var code: String,
 
         var name: String,
@@ -23,8 +34,6 @@ sealed class UICountry {
     ) : UICountry()
 
     data class SmallInfoCountry(
-        var isBookmarked: Boolean,
-
         var alpha2Code: String,
         var alpha3Code: String,
 
@@ -39,6 +48,6 @@ sealed class UICountry {
         var languages: List<String>,
 
         var currencies: List<String>
-    ) : UICountry()
+    ) : UICountry(true)
 
 }

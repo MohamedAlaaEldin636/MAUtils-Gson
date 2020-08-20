@@ -1,6 +1,20 @@
+/*
+ * Copyright © 2020 Mohamed Alaa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package com.maproductions.lib.mautils_gson_core.internal
 
-import android.util.Log
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
@@ -20,16 +34,11 @@ import kotlin.reflect.full.createInstance
  */
 class MAJsonDeserializer : JsonDeserializer<Any?> {
 
-    // todo del this later isa.
-    private var performLog = false
-
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,
         context: JsonDeserializationContext?
     ): Any? {
-        Log.d("Special C12", "Enter deserializer with json $json")
-
         val jsonAsString = json?.toString()
         if (jsonAsString.isNullOrEmpty()) {
             return null
@@ -38,7 +47,6 @@ class MAJsonDeserializer : JsonDeserializer<Any?> {
         val jsonObject = runCatching {
             JSONObject(jsonAsString)
         }.getOrElse {
-            Log.e("Lib code 321", "STRANGE UN-EXPECTED isa.")
             return jsonAsString.fromJsonOrNullWithFullTypeInfo(typeOfT)
         }
 
@@ -48,11 +56,6 @@ class MAJsonDeserializer : JsonDeserializer<Any?> {
 
         val classFullName = runCatching { jsonObject.getString(KEY_CLASS_FULL_NAME) }
             .getOrNull()
-
-        performLog = classFullName?.contains("Error") == true
-        if (performLog) {
-            Log.v("Special C12", "classFullName $classFullName")
-        }
 
         /*
         ==> (Just FYI) In case of DataResult.Loading
@@ -72,113 +75,11 @@ class MAJsonDeserializer : JsonDeserializer<Any?> {
             jsonObject.getJSONObject(KEY_NORMAL_SERIALIZATION_JSON_STRING)
         }.getOrNull() ?: return null // data is unknown so impossible deserialization isa.
 
-        if (performLog) {
-            Log.d("Special C12", "serializationJsonObject JSONObject $serializationJsonObject ||||| jClass $jClass")
-        }
-
-        if (KEY_CLASS_FULL_NAME in serializationJsonObject.toString()
-            && KEY_NORMAL_SERIALIZATION_JSON_STRING in serializationJsonObject.toString()) {
-            Log.w("Lib code 321", "Found in deserialization a nesting case isa.")
-            if (performLog) {
-                Log.d("Special C12", "perform nesting deserialization due to annotation isa, jClass $jClass, context $context")
-            }
+        if (serializationJsonObject.toString().containsAnnotationSerialization()) {
             return serializationJsonObject.extract(jClass, context)
         }
 
-        if (performLog) {
-            Log.i("Special C12", "serializationJsonObject.toString().fromJsonOrNullJava(jClass) ${serializationJsonObject.toString().fromJsonOrNullJava(jClass)} " +
-                    "||||||||||||||||||||||  ${serializationJsonObject.toString().fromJsonOrNullWithFullTypeInfo(jClass)}")
-            val nS = serializationJsonObject.toString().replace("{", "").replace("}", "")
-            Log.i("Special C12", "$nS |||||||| ${nS.fromJsonOrNullJava(jClass)} " +
-                    "||||||||||||||||||||||  ${nS.fromJsonOrNullWithFullTypeInfo(jClass)}")
-        }else {
-            Log.i("Special C13", "Special C13 -> others isa. ${serializationJsonObject.toString().fromJsonOrNullWithFullTypeInfo(jClass)}")
-        }
-
-        // todo e3mel elle mawgod ta7t check nta el constructors isa.
-        return serializationJsonObject.toString().fromJsonOrNullJava(jClass) ?: runCatching {
-            // Get all fields of the jClass that exists in receiver's keys isa.
-            val allKeys = serializationJsonObject.keys()
-            val newParamsWithKeys = mutableListOf<Pair<Any?, String>>()
-            for (index in 0 until serializationJsonObject.length()) {
-                val key = allKeys.next()
-                val value = runCatching { serializationJsonObject.get(key) }.getOrNull()
-                val valueAsString = value.toStringOrEmpty()
-
-                val fieldClass = if (value !is JSONObject && value !is JSONArray) null else jClass.runCatching {
-                    declaredFieldsForSuperclassesOnly(declaredFields.toList()).firstOrNull {
-                        it.name == key
-                    }?.genericType
-                }.getOrNull()
-
-                val newValue = when {
-                    value is JSONObject && value.toString().containsAnnotationSerialization() -> {
-                        deserialize(
-                            runCatching { JsonParser.parseString(valueAsString) }.getOrNull(),
-                            fieldClass,
-                            context
-                        )
-                    }
-                    value is JSONObject || value is JSONArray -> {
-                        val jsonElement = runCatching { JsonParser.parseString(valueAsString) }.getOrNull()
-                        if (context != null && jsonElement != null && fieldClass != null) {
-                            context.deserialize(
-                                jsonElement,
-                                fieldClass
-                            )
-                        }else {
-                            value.toString().fromJsonOrNullWithFullTypeInfo(fieldClass)
-                        }
-                    }
-                    else -> value
-                }
-
-                newParamsWithKeys += newValue to key
-            }
-
-            for (constructor in jClass.constructors) {
-                runCatching {
-                    val size = constructor.parameterTypes.size
-
-                    val constructorParams = newParamsWithKeys.subList(0, size).map { it.first }
-                    val otherParamsWithKeys = newParamsWithKeys.subList(size, newParamsWithKeys.size)
-
-                    if (performLog) {
-                        Log.w("Special C12", "constructor params ${constructor.parameterTypes.toList()} ||| " +
-                                "${constructor.genericParameterTypes.toList()} ||| " +
-                                "${constructor.typeParameters.toList()}")
-                        Log.e("Special C12", "size $size, constructorParams $constructorParams, otherParamsWithKeys $otherParamsWithKeys")
-                    }
-
-                    return constructor.newInstance(*constructorParams.toTypedArray()).apply {
-                        if (performLog) {
-                            Log.e("Special C12", "hmmm $this")
-                        }
-
-                        if (otherParamsWithKeys.isNotEmpty()) {
-                            for ((param, key) in otherParamsWithKeys) {
-                                try {
-                                    val field = runCatching {
-                                        javaClass.getDeclaredFieldsForSelfAndSuperclassesOnly(key)
-                                    }.getOrNull() ?: continue
-
-                                    val isAccessible = field.isAccessible
-                                    field.isAccessible = true
-
-                                    field.set(this, param)
-
-                                    field.isAccessible = isAccessible
-                                }catch (throwable: Throwable) {
-                                    // ignore isa.
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            TODO()
-        }.getOrNull()
+        return serializationJsonObject.toString().fromJsonOrNullJava(jClass) ?: serializationJsonObject.extract(jClass, context)
     }
 
     /**
@@ -187,7 +88,7 @@ class MAJsonDeserializer : JsonDeserializer<Any?> {
     private fun JSONObject.extract(
         jClass: Class<out Any>,
         context: JsonDeserializationContext?
-    ): Any? {
+    ): Any? = runCatching {
         // Get all fields of the jClass that exists in receiver's keys isa.
         val allKeys = keys()
         val newParamsWithKeys = mutableListOf<Pair<Any?, String>>()
@@ -227,31 +128,67 @@ class MAJsonDeserializer : JsonDeserializer<Any?> {
             newParamsWithKeys += newValue to key
         }
 
-        if (performLog) {
-            Log.i("Special C12", "allKeys $allKeys, newParamsWithKeys $newParamsWithKeys")
+        // Call appropriate constructor then inject fields isa.
+        for (constructor in jClass.constructors) {
+            runSafely {
+                val size = constructor.parameterTypes.size
+
+                val constructorParams = newParamsWithKeys.subList(0, size).map { it.first }
+                val otherParamsWithKeys = newParamsWithKeys.subList(size, newParamsWithKeys.size)
+
+                return@runCatching constructor.newInstance(*constructorParams.toTypedArray()).apply {
+                    if (otherParamsWithKeys.isNotEmpty()) {
+                        for ((param, key) in otherParamsWithKeys) {
+                            try {
+                                val field = runCatching {
+                                    javaClass.getDeclaredFieldsForSelfAndSuperclassesOnly(key)
+                                }.getOrNull() ?: continue
+
+                                val isAccessible = field.isAccessible
+                                field.isAccessible = true
+
+                                field.set(this, param)
+
+                                field.isAccessible = isAccessible
+                            }catch (throwable: Throwable) {
+                                // ignore isa.
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        // Call appropriate constructor then inject fields isa.
-        runCatching {
-            for (constructor in jClass.constructors) {
-                runCatching {
-                    val size = constructor.parameterTypes.size
+        runSafely {
+            return@runCatching jClass.kotlin.createInstance().apply {
+                for ((param, key) in newParamsWithKeys) {
+                    try {
+                        val field = runCatching {
+                            javaClass.getDeclaredFieldsForSelfAndSuperclassesOnly(key)
+                        }.getOrNull() ?: continue
 
-                    val constructorParams = newParamsWithKeys.subList(0, size).map { it.first }
-                    val otherParamsWithKeys = newParamsWithKeys.subList(size, newParamsWithKeys.size)
+                        val isAccessible = field.isAccessible
+                        field.isAccessible = true
 
-                    if (performLog) {
-                        Log.w("Special C12", "constructor params ${constructor.parameterTypes.toList()} ||| " +
-                                "${constructor.genericParameterTypes.toList()} ||| " +
-                                "${constructor.typeParameters.toList()}")
-                        Log.e("Special C12", "size $size, constructorParams $constructorParams, otherParamsWithKeys $otherParamsWithKeys")
+                        field.set(this, param)
+
+                        field.isAccessible = isAccessible
+                    }catch (throwable: Throwable) {
+                        // ignore isa.
                     }
+                }
+            }
+        }
 
-                    return constructor.newInstance(*constructorParams.toTypedArray()).apply {
-                        if (performLog) {
-                            Log.e("Special C12", "hmmm $this")
-                        }
+        for (constructor in jClass.kotlin.constructors) {
+            runSafely {
+                val size = constructor.parameters.size
 
+                val constructorParams = newParamsWithKeys.subList(0, size).map { it.first }
+                val otherParamsWithKeys = newParamsWithKeys.subList(size, newParamsWithKeys.size)
+
+                runSafely {
+                    return@runCatching constructor.call(*constructorParams.toTypedArray()).apply {
                         if (otherParamsWithKeys.isNotEmpty()) {
                             for ((param, key) in otherParamsWithKeys) {
                                 try {
@@ -272,79 +209,30 @@ class MAJsonDeserializer : JsonDeserializer<Any?> {
                         }
                     }
                 }
-            }
 
-            runCatching {
-                return jClass.kotlin.createInstance().apply {
-                    for ((param, key) in newParamsWithKeys) {
-                        try {
-                            val field = runCatching {
-                                javaClass.getDeclaredFieldsForSelfAndSuperclassesOnly(key)
-                            }.getOrNull() ?: continue
-
-                            val isAccessible = field.isAccessible
-                            field.isAccessible = true
-
-                            field.set(this, param)
-
-                            field.isAccessible = isAccessible
-                        }catch (throwable: Throwable) {
-                            // ignore isa.
-                        }
+                val map = mutableMapOf<KParameter, Any?>()
+                for (param in constructor.parameters) {
+                    if (param.isOptional.not()) {
+                        map += param to newParamsWithKeys.firstOrNull { it.second == param.name }
                     }
                 }
-            }.getOrElse {
-                for (constructor in jClass.kotlin.constructors) {
-                    val size = constructor.parameters.size
 
-                    val constructorParams = newParamsWithKeys.subList(0, size).map { it.first }
-                    val otherParamsWithKeys = newParamsWithKeys.subList(size, newParamsWithKeys.size)
+                if (map.size != size) {
+                    return@runCatching constructor.callBy(map).apply {
+                        for ((param, key) in otherParamsWithKeys) {
+                            try {
+                                val field = runCatching {
+                                    javaClass.getDeclaredFieldsForSelfAndSuperclassesOnly(key)
+                                }.getOrNull() ?: continue
 
-                    return runCatching {
-                        constructor.call(*constructorParams.toTypedArray()).apply {
-                            if (otherParamsWithKeys.isNotEmpty()) {
-                                for ((param, key) in otherParamsWithKeys) {
-                                    try {
-                                        val field = runCatching {
-                                            javaClass.getDeclaredFieldsForSelfAndSuperclassesOnly(key)
-                                        }.getOrNull() ?: continue
+                                val isAccessible = field.isAccessible
+                                field.isAccessible = true
 
-                                        val isAccessible = field.isAccessible
-                                        field.isAccessible = true
+                                field.set(this, param)
 
-                                        field.set(this, param)
-
-                                        field.isAccessible = isAccessible
-                                    }catch (throwable: Throwable) {
-                                        // ignore isa.
-                                    }
-                                }
-                            }
-                        }
-                    }.getOrElse {
-                        val map = mutableMapOf<KParameter, Any?>()
-                        for (param in constructor.parameters) {
-                            if (param.isOptional.not()) {
-                                map += param to newParamsWithKeys.firstOrNull { it.second == param.name }
-                            }
-                        }
-
-                        return constructor.callBy(map).apply {
-                            for ((param, key) in otherParamsWithKeys) {
-                                try {
-                                    val field = runCatching {
-                                        javaClass.getDeclaredFieldsForSelfAndSuperclassesOnly(key)
-                                    }.getOrNull() ?: continue
-
-                                    val isAccessible = field.isAccessible
-                                    field.isAccessible = true
-
-                                    field.set(this, param)
-
-                                    field.isAccessible = isAccessible
-                                }catch (throwable: Throwable) {
-                                    // ignore isa.
-                                }
+                                field.isAccessible = isAccessible
+                            }catch (throwable: Throwable) {
+                                // ignore isa.
                             }
                         }
                     }
@@ -352,11 +240,13 @@ class MAJsonDeserializer : JsonDeserializer<Any?> {
             }
         }
 
-        return null
-    }
+        null
+    }.getOrNull()
 
     private fun String?.containsAnnotationSerialization(): Boolean {
-        return if (this == null) false else KEY_CLASS_FULL_NAME in this && KEY_NORMAL_SERIALIZATION_JSON_STRING in this
+        return if (this == null) false else {
+            KEY_CLASS_FULL_NAME in this && KEY_NORMAL_SERIALIZATION_JSON_STRING in this
+        }
     }
 
 }

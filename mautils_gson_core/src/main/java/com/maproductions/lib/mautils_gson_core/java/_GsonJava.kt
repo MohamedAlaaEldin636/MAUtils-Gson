@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Mohamed Alaa
+ * Copyright © 2020 Mohamed Alaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  */
 
 @file:JvmName("GsonUtils")
+@file:Suppress("unused")
 
 package com.maproductions.lib.mautils_gson_core.java
 

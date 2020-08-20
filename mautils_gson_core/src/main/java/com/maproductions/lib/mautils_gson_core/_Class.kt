@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Mohamed Alaa
+ * Copyright © 2020 Mohamed Alaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ internal fun Class<*>.getDeclaredFieldsForSelfAndSuperclassesOnly(name: String):
     }
 }
 
+@Suppress("unused")
 internal fun Class<*>.getDeclaredFieldsForSuperclassesOnly(name: String): Field? {
     val allFields = declaredFieldsForSuperclassesOnly()
     return allFields.firstOrNull {
