@@ -21,6 +21,9 @@ import com.google.gson.Gson
 
 object MAUtilsGsonCore {
 
+    /**
+     * @return default [Gson] used by the library when you use [toJson] with no args isa.
+     */
     @JvmStatic
     fun getLibUsedGson(): Gson {
         return privateGeneratedGson
