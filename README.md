@@ -66,7 +66,10 @@ plugins {
 }
 // ...
 dependencies {
-    implementation("com.github.MohamedAlaaEldin636.MAUtils-Gson:mautils_gson_core:X.Y.Z")
+    implementation("com.github.MohamedAlaaEldin636.MAUtils-Gson:mautils_gson_core:X.Y.Z") {
+        // Opt-out from annotation since it's only useful with processor.
+        exclude("com.github.MohamedAlaaEldin636.MAUtils-Gson", "mautils_gson_core_annotation")
+    }
     // ...
 }
 ```
