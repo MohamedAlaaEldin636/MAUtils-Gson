@@ -15,8 +15,16 @@
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+//import org.gradle.kotlin.dsl.`kotlin-dsl`
+
 buildscript {
-    
+
+    /*plugins {
+        //`kotlin-dsl`
+        //id("libs.gradle.kts")
+    }*/
+    apply(from = "libs.gradle.kts")
+
     repositories {
         google()
         jcenter()

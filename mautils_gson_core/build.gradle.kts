@@ -14,7 +14,7 @@
  */
 
 plugins {
-    id(Config.Plugins.androidLibrary)
+    id(/*abc123*/Config.Plugins.androidLibrary)
 
     kotlin(Config.Plugins.kotlinAndroid)
 
@@ -28,6 +28,8 @@ plugins {
 group = Config.Group.github
 
 android {
+
+
     compileSdkVersion(Config.Android.compileSdk)
     buildToolsVersion(Config.Android.builtTools)
 

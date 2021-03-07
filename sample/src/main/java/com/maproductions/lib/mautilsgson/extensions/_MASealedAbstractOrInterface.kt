@@ -22,10 +22,10 @@ import com.maproductions.lib.mautils_gson_core_annotation.MAProviderOfSealedAbst
 import com.maproductions.lib.mautils_gson_core_annotation.MASealedAbstractOrInterface
 import com.maproductions.mohamedalaa.core.model.UICountry
 
-@MASealedAbstractOrInterface
+//@MASealedAbstractOrInterface // Can be used, but not needed in the example.
 @MAProviderOfSealedAbstractOrInterface(
     DataResult::class,
     UICountry::class,
-    DataResult.Error::class
+    //DataResult.Error::class, // Not needed at all.
 )
 interface _ProviderOfSealedAbstractOrInterface

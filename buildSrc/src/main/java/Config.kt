@@ -141,7 +141,7 @@ object Config {
         const val test_androidx_core = "1.2.0"
         const val test_androidx_junit = "1.1.1"
         const val test_androidx_espresso = "3.2.0"
-        const val test_robolectric = "4.2.1"
+        const val test_robolectric = "4.4"
     }
 
 }

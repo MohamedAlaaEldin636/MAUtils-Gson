@@ -23,6 +23,8 @@ plugins {
     kotlin(Config.Plugins.kotlinKapt)
 }
 
+//apply<GreetingPlugin>()
+
 android {
     compileSdkVersion(Config.Android.compileSdk)
     buildToolsVersion(Config.Android.builtTools)
