@@ -32,7 +32,7 @@ group = Groups.github
 dependencies {
     implementation(fileTree(dirLibsIncludeJar()))
 
-    implementation(Deps.kotlin_group.stdlib_jdk8)
+    implementation(Deps.kotlin.stdlib_jdk8)
 }
 
 java {

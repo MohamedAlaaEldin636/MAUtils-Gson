@@ -12,16 +12,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-include(":core")
-include(":annotation")
-includeBuild("dependencies")
 
-include(":mautils_gson_core_processor")
-include(":mautils_gson_core_annotation")
-include(":mautils_gson_core")
-include(":feature:flow_1")
-include(":core_2")
-include(":sample")
-include(":core_1")
+@file:Suppress("unused")
 
-rootProject.name = "MAUtils Gson"
+package com.maproductions.mohamedalaa.core
+
+import com.google.gson.Gson
+
+object MAUtilsGsonCore {
+
+    /**
+     * @return default [Gson] used by the library when you use [toJson] with no args isa.
+     */
+    @JvmStatic
+    fun getLibUsedGson(): Gson {
+        return privateGeneratedGson
+    }
+
+}

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-@file:Suppress("unused")
+@file:Suppress("unused", "SameParameterValue")
 
 package com.maproductions.mohamedalaa.dependencies
 
@@ -22,22 +22,83 @@ package com.maproductions.mohamedalaa.dependencies
  */
 object Deps {
 
-    val kotlin_group = KotlinGroup
+    val kotlin = KotlinGroup
 
-    object KotlinGroup : BaseGroup() {
+    val own_libs = OwnLibsGroup
+
+    val androidx = Androidx()
+
+    const val gson = "com.google.code.gson:gson:${Versions.gson}"
+
+    const val junit = "junit:junit:${Versions.test_junit}"
+
+    const val robolectric = "org.robolectric:robolectric:${Versions.test_robolectric}"
+
+    class Androidx : BaseGroup() {
+        override val name: String
+            get() = "androidx"
+
+        val test = Test()
+
+        inner class Test : BaseGroup() {
+            override val name: String
+                get() = "${this@Androidx.name}.test"
+
+            val core = lib("core", Versions.test_androidx_core)
+            val runner = lib("runner", Versions.test_androidx_core)
+            val rules = lib("rules", Versions.test_androidx_core)
+
+            val junit = lib("junit", Versions.test_androidx_junit)
+            val espresso = Espresso()
+
+            inner class Espresso : BaseGroup() {
+                override val name: String
+                    get() = "${this@Test.name}.espresso"
+
+                val core = lib("espresso-core", Versions.test_androidx_espresso)
+            }
+
+        }
+
+    }
+
+    object OwnLibsGroup : EmptyBaseGroup() {
+        val annotation = ownLib("annotation")
+    }
+
+    object KotlinGroup : SameVersionBaseGroup() {
         override val name: String
             get() = "org.jetbrains.kotlin"
 
-        val stdlib_jdk8 = lib("kotlin-stdlib-jdk8", Versions.kotlin)
+        override val version: String
+            get() = Versions.kotlin
+
+        val stdlib_jdk8 = lib("kotlin-stdlib-jdk8")
+
+        val reflect = lib("kotlin-reflect")
+
+        val test = lib("kotlin-test")
     }
 
     abstract class BaseGroup {
         protected abstract val name: String
 
         protected fun lib(artifact: String, version: String): String = "$name:$artifact:$version"
-        protected fun lib(artifact: String, version: Int): String = "$name:$artifact:$version"
+
+        protected fun ownLib(moduleName: String): String = ":$moduleName"
 
         override fun toString(): String = name
+    }
+
+    abstract class EmptyBaseGroup : BaseGroup() {
+        override val name: String
+            get() = ""
+    }
+
+    abstract class SameVersionBaseGroup : BaseGroup() {
+        abstract val version: String
+
+        protected fun lib(artifact: String): String = "$name:$artifact:$version"
     }
 
 }

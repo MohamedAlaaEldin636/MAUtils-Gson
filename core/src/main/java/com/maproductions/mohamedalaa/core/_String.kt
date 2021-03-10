@@ -12,16 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-include(":core")
-include(":annotation")
-includeBuild("dependencies")
 
-include(":mautils_gson_core_processor")
-include(":mautils_gson_core_annotation")
-include(":mautils_gson_core")
-include(":feature:flow_1")
-include(":core_2")
-include(":sample")
-include(":core_1")
+package com.maproductions.mohamedalaa.core
 
-rootProject.name = "MAUtils Gson"
+fun Any?.toStringOrEmpty(): String = this?.toString() ?: ""

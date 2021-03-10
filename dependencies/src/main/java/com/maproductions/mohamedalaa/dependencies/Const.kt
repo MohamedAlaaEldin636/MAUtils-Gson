@@ -12,16 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-include(":core")
-include(":annotation")
-includeBuild("dependencies")
 
-include(":mautils_gson_core_processor")
-include(":mautils_gson_core_annotation")
-include(":mautils_gson_core")
-include(":feature:flow_1")
-include(":core_2")
-include(":sample")
-include(":core_1")
+package com.maproductions.mohamedalaa.dependencies
 
-rootProject.name = "MAUtils Gson"
+object Const {
+
+    const val test_instrumentation_runner = "androidx.test.runner.AndroidJUnitRunner"
+
+    const val consumer_proguard_files = "consumer-rules.pro"
+
+}

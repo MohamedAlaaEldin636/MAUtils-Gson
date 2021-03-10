@@ -32,6 +32,8 @@ object Versions {
 
     const val plugin_android = "4.1.2"
 
+    const val gson = "2.8.6"
+
     const val test_junit = "4.13.1"
     const val test_androidx_core = "1.3.0"
     const val test_androidx_junit = "1.1.2"

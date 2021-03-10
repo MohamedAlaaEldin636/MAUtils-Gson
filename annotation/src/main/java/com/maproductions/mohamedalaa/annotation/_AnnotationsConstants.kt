@@ -16,7 +16,7 @@
 package com.maproductions.mohamedalaa.annotation
 
 /**
- * - Shouldn't be used except by this & mautils_gson_core modules isa.
+ * - Shouldn't be used except by this & core modules isa.
  */
 @Suppress("ClassName", "MemberVisibilityCanBePrivate", "unused")
 object _AnnotationsConstants {
