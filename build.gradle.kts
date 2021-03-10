@@ -15,16 +15,15 @@
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-//import org.gradle.kotlin.dsl.`kotlin-dsl`
+plugins {
+    id("dependencies") version "1.0.0" apply true
+}
+
+apply(plugin = "dependencies")
 
 buildscript {
 
-    /*plugins {
-        //`kotlin-dsl`
-        //id("libs.gradle.kts")
-    }*/
-    apply(from = "libs.gradle.kts")
-
+    val kotlin_version by extra("1.4.31")
     repositories {
         google()
         jcenter()
@@ -36,14 +35,20 @@ buildscript {
         classpath(Config.BuildPlugins.kotlinGradlePlugin)
 
         classpath(Config.BuildPlugins.jitpack)
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31")
     }
 
 }
 
 allprojects {
+
+    apply(plugin = "dependencies")
+
     repositories {
         google()
         jcenter()
+        //gradlePluginPortal()
+        maven { url = uri("https://jitpack.io") }
     }
 }
 

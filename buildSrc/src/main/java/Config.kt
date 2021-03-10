@@ -115,8 +115,8 @@ object Config {
     }
 
     object Versions {
-        const val kotlin = "1.4.0"
-        const val gradle = "4.0.1"
+        const val kotlin = "1.4.31"
+        const val gradle = "4.1.2"
 
         // Jetpack
         const val app_compat = "1.2.0"

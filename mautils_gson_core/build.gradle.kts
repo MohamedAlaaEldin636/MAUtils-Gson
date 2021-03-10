@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
+import com.maproductions.mohamedalaa.dependencies.Versions
+
 plugins {
-    id(/*abc123*/Config.Plugins.androidLibrary)
+    id("com.android.library")
 
-    kotlin(Config.Plugins.kotlinAndroid)
+    kotlin("android")
 
-    kotlin(Config.Plugins.kotlinAndroidExtensions)
+    kotlin("kapt")
 
-    kotlin(Config.Plugins.kotlinKapt)
-
-    id(Config.Plugins.jitpack)
+    // Jitpack
+    id("com.github.dcendents.android-maven")
 }
 
 group = Config.Group.github
 
 android {
 
-
-    compileSdkVersion(Config.Android.compileSdk)
-    buildToolsVersion(Config.Android.builtTools)
+    compileSdkVersion(Versions.compile_sdk)
+    buildToolsVersion(Versions.build_tools)
 
     defaultConfig {
         minSdkVersion(Config.Android.minSdk)
