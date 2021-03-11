@@ -16,12 +16,28 @@
 package com.maproductions.mohamedalaa.processor.extensions
 
 import javax.annotation.processing.ProcessingEnvironment
+import javax.lang.model.element.Element
 import javax.tools.Diagnostic
+
+fun ProcessingEnvironment.error(msg: Any?) {
+    messager.printMessage(
+        Diagnostic.Kind.ERROR,
+        msg?.toString() ?: "NULL"
+    )
+}
 
 fun ProcessingEnvironment.warning(msg: Any?) {
     messager.printMessage(
         Diagnostic.Kind.WARNING,
-        msg?.toString() ?: "NULL"
+        msg?.toString() ?: "NULL",
+    )
+}
+
+fun ProcessingEnvironment.warning(msg: Any?, element: Element) {
+    messager.printMessage(
+        Diagnostic.Kind.WARNING,
+        msg?.toString() ?: "NULL",
+        element
     )
 }
 

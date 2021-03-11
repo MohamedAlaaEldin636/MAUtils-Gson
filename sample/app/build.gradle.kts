@@ -14,19 +14,14 @@
  */
 
 import com.maproductions.mohamedalaa.dependencies.*
-import com.maproductions.mohamedalaa.dependencies.Deps
 
 plugins {
-    id("com.android.library")
+    id("com.android.application")
 
     kotlin("android")
 
     kotlin("kapt")
-
-    id("com.github.dcendents.android-maven")
 }
-
-group = Groups.github
 
 android {
 
@@ -34,6 +29,8 @@ android {
     buildToolsVersion(Versions.build_tools)
 
     defaultConfig {
+        applicationId = "com.maproductions.mohamedalaa.sample.app"
+
         minSdkVersion(Versions.min_sdk)
         targetSdkVersion(Versions.target_sdk)
 
@@ -52,8 +49,8 @@ android {
             isMinifyEnabled = false
 
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
             )
         }
     }
@@ -65,41 +62,40 @@ android {
 
     kotlinOptions {
         jvmTarget = Versions.jvm_1_8
+
+        //freeCompilerArgs = freeCompilerArgs + listOf("-parameters")
     }
+
+    packagingOptions {
+        exclude("META-INF/*.kotlin_module")
+    }
+    /*
+
+     */
 }
 
 dependencies {
-    // Can be excluded if processor won't be used.
-    api(project(Deps.own_libs.annotation))
+    api(project(Deps.own_libs.sample.core))
 
-    api(Deps.kotlin.stdlib_jdk8)
+    kapt(project(Deps.own_libs.processor))
 
-    api(Deps.kotlin.reflect)
+    implementation(Deps.androidx.core.core_ktx)
 
-    api(Deps.gson)
+    implementation(Deps.timber)
 
-    // -- Unit Testing -- //
+    implementation(Deps.androidx.app_compat.app_compat)
 
-    testImplementation(Deps.junit)
+    implementation(Deps.material)
 
-    testImplementation(Deps.kotlin.test)
+    implementation(Deps.androidx.constraint_layout.constraint_layout)
 
-    testImplementation(Deps.androidx.test.core)
-
-    testImplementation(Deps.robolectric)
-
-    // -- Instrumental Testing -- //
-
-    androidTestImplementation(Deps.androidx.test.runner)
-    androidTestImplementation(Deps.androidx.test.rules)
-
-    //androidTestImplementation(Deps.androidx.test.junit)
-    androidTestImplementation(Deps.androidx.test.espresso.core)
+    testImplementation(project(Deps.own_libs.core, Const.integrate_test_implementations))
+    androidTestImplementation(project(Deps.own_libs.core, Const.integrate_android_test_implementations))
 }
 
-val integrateTestImplementations: Configuration by configurations.creating {
-    extendsFrom(configurations["testImplementation"])
-}
-val integrateAndroidTestImplementations: Configuration by configurations.creating {
-    extendsFrom(configurations["androidTestImplementation"])
-}
+/*tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+    kotlinOptions {
+        @Suppress("SuspiciousCollectionReassignment")
+        freeCompilerArgs += "-parameters"
+    }
+}*/

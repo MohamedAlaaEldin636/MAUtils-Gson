@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.maproductions.mohamedalaa.dependencies
+package com.maproductions.mohamedalaa.sample.app.extensions
 
-object Const {
+import com.maproductions.mohamedalaa.annotation.MASealedAbstractOrInterface
 
-    const val test_instrumentation_runner = "androidx.test.runner.AndroidJUnitRunner"
+@MASealedAbstractOrInterface
+sealed class M123 {
 
-    const val consumer_proguard_files = "consumer-rules.pro"
-
-    const val integrate_test_implementations = "integrateTestImplementations"
-
-    const val integrate_android_test_implementations = "integrateAndroidTestImplementations"
+    object C1 : M123()
 
 }

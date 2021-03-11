@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.maproductions.mohamedalaa.dependencies
+package com.maproductions.mohamedalaa.sample.app
 
-object Const {
+import org.junit.Test
 
-    const val test_instrumentation_runner = "androidx.test.runner.AndroidJUnitRunner"
+import org.junit.Assert.*
 
-    const val consumer_proguard_files = "consumer-rules.pro"
-
-    const val integrate_test_implementations = "integrateTestImplementations"
-
-    const val integrate_android_test_implementations = "integrateAndroidTestImplementations"
-
+/**
+ * Example local unit test, which will execute on the development machine (host).
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+class ExampleUnitTest {
+    @Test
+    fun addition_isCorrect() {
+        assertEquals(4, 2 + 2)
+    }
 }

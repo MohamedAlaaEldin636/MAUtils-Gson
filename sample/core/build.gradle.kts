@@ -14,7 +14,6 @@
  */
 
 import com.maproductions.mohamedalaa.dependencies.*
-import com.maproductions.mohamedalaa.dependencies.Deps
 
 plugins {
     id("com.android.library")
@@ -22,11 +21,7 @@ plugins {
     kotlin("android")
 
     kotlin("kapt")
-
-    id("com.github.dcendents.android-maven")
 }
-
-group = Groups.github
 
 android {
 
@@ -52,8 +47,8 @@ android {
             isMinifyEnabled = false
 
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
             )
         }
     }
@@ -69,37 +64,10 @@ android {
 }
 
 dependencies {
-    // Can be excluded if processor won't be used.
+    api(project(Deps.own_libs.core))
+
     api(project(Deps.own_libs.annotation))
 
-    api(Deps.kotlin.stdlib_jdk8)
-
-    api(Deps.kotlin.reflect)
-
-    api(Deps.gson)
-
-    // -- Unit Testing -- //
-
-    testImplementation(Deps.junit)
-
-    testImplementation(Deps.kotlin.test)
-
-    testImplementation(Deps.androidx.test.core)
-
-    testImplementation(Deps.robolectric)
-
-    // -- Instrumental Testing -- //
-
-    androidTestImplementation(Deps.androidx.test.runner)
-    androidTestImplementation(Deps.androidx.test.rules)
-
-    //androidTestImplementation(Deps.androidx.test.junit)
-    androidTestImplementation(Deps.androidx.test.espresso.core)
-}
-
-val integrateTestImplementations: Configuration by configurations.creating {
-    extendsFrom(configurations["testImplementation"])
-}
-val integrateAndroidTestImplementations: Configuration by configurations.creating {
-    extendsFrom(configurations["androidTestImplementation"])
+    testImplementation(project(Deps.own_libs.core, Const.integrate_test_implementations))
+    androidTestImplementation(project(Deps.own_libs.core, Const.integrate_android_test_implementations))
 }

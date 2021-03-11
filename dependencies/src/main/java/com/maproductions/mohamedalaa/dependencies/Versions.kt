@@ -32,9 +32,19 @@ object Versions {
 
     const val gson = "2.8.6"
 
+    const val timber = "4.7.1"
+
+    const val material = "1.3.0"
+
     const val kotlin_poet = "1.6.0"
 
     const val kotlinx_metadata = "0.2.0"
+
+    const val androidx_core = "1.3.2"
+
+    const val androidx_app_compat = "1.2.0"
+
+    const val androidx_constraint_layout = "2.0.4"
 
     // ---- Testing ---- //
 

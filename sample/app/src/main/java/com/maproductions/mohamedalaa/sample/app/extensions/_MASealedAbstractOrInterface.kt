@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.maproductions.mohamedalaa.dependencies
+@file:Suppress("ClassName", "unused")
 
-object Const {
+package com.maproductions.mohamedalaa.sample.app.extensions
 
-    const val test_instrumentation_runner = "androidx.test.runner.AndroidJUnitRunner"
+import com.maproductions.mohamedalaa.annotation.MAProviderOfSealedAbstractOrInterface
+import com.maproductions.mohamedalaa.sample.core.DataResult
+import com.maproductions.mohamedalaa.sample.core.UICountry
 
-    const val consumer_proguard_files = "consumer-rules.pro"
+//@MASealedAbstractOrInterface // Can be used, but not needed in the example.
+@MAProviderOfSealedAbstractOrInterface(
+    DataResult::class,
+    UICountry::class,
+    //DataResult.Error::class, // Not needed at all.
+)
+interface _ProviderOfSealedAbstractOrInterface
 
-    const val integrate_test_implementations = "integrateTestImplementations"
-
-    const val integrate_android_test_implementations = "integrateAndroidTestImplementations"
-
-}

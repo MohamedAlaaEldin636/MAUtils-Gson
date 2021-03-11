@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-@file:Suppress("unused", "SameParameterValue")
+@file:Suppress("unused", "SameParameterValue", "PropertyName")
 
 package com.maproductions.mohamedalaa.dependencies
 
@@ -24,13 +24,17 @@ object Deps {
 
     val kotlin = Kotlin
 
-    val own_libs = OwnLibs
+    val own_libs = OwnLibs()
 
     val androidx = Androidx()
 
     val kotlinx = Kotlinx
 
     const val gson = "com.google.code.gson:gson:${Versions.gson}"
+
+    const val material = "com.google.android.material:material:${Versions.material}"
+
+    const val timber = "com.jakewharton.timber:timber:${Versions.timber}"
 
     const val kotlin_poet = "com.squareup:kotlinpoet:${Versions.kotlin_poet}"
 
@@ -55,6 +59,39 @@ object Deps {
 
         val test = Test()
 
+        val core = Core()
+
+        val app_compat = AppCompat()
+
+        val constraint_layout = ConstraintLayout()
+
+        inner class Core : BaseGroup() {
+            override val name: String
+                get() = "${this@Androidx.name}.core"
+
+            val core_ktx = lib("core-ktx", Versions.androidx_core)
+        }
+
+        inner class AppCompat : SameVersionBaseGroup() {
+            override val name: String
+                get() = "${this@Androidx.name}.appcompat"
+
+            override val version: String
+                get() = Versions.androidx_app_compat
+
+            val app_compat = lib("appcompat")
+        }
+
+        inner class ConstraintLayout : SameVersionBaseGroup() {
+            override val name: String
+                get() = "${this@Androidx.name}.constraintlayout"
+
+            override val version: String
+                get() = Versions.androidx_constraint_layout
+
+            val constraint_layout = lib("constraintlayout")
+        }
+
         inner class Test : BaseGroup() {
             override val name: String
                 get() = "${this@Androidx.name}.test"
@@ -77,8 +114,16 @@ object Deps {
 
     }
 
-    object OwnLibs : EmptyBaseGroup() {
+    class OwnLibs : EmptyBaseGroup() {
+        val core = ownLib("core")
         val annotation = ownLib("annotation")
+        val processor = ownLib("processor")
+
+        val sample = Sample()
+
+        inner class Sample : EmptyBaseGroup() {
+            val core = ownLib("sample:core")
+        }
     }
 
     object Kotlin : SameVersionBaseGroup() {

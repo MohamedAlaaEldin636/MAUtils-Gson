@@ -23,12 +23,11 @@ import kotlin.reflect.KClass
  * or even another library module in the same project add the needed classes in this annotation isa,
  * instead of [MASealedAbstractOrInterface] since you don't own them isa.
  *
- * - Note annotated class with this annotation will be ignored, yet it will be accessd so after
+ * - Note annotated class with this annotation will be ignored, yet it will be accessed so after
  * compilation the unused lint warning won't appear isa, However you still can annotate it
  * with [MASealedAbstractOrInterface] in case you want it to be annotated with it isa.
  *
- * @param value shouldn't be empty, and if empty processor will show a warning indicating it is
- * redundant isa.
+ * @param value shouldn't be empty, Otherwise it's useless isa.
  */
 @Retention(AnnotationRetention.BINARY)
 @Target(AnnotationTarget.CLASS)

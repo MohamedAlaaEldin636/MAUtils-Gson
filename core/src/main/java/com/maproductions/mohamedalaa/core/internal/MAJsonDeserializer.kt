@@ -19,7 +19,6 @@ import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
-import com.maproductions.lib.mautils_gson_core.*
 import com.maproductions.mohamedalaa.core.*
 import com.maproductions.mohamedalaa.core.KEY_CLASS_FULL_NAME
 import com.maproductions.mohamedalaa.core.KEY_NORMAL_SERIALIZATION_JSON_STRING

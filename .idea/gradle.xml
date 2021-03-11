@@ -24,18 +24,12 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/annotation" />
-            <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/core" />
-            <option value="$PROJECT_DIR$/core_1" />
-            <option value="$PROJECT_DIR$/core_2" />
             <option value="$PROJECT_DIR$/dependencies" />
-            <option value="$PROJECT_DIR$/feature" />
-            <option value="$PROJECT_DIR$/feature/flow_1" />
-            <option value="$PROJECT_DIR$/mautils_gson_core" />
-            <option value="$PROJECT_DIR$/mautils_gson_core_annotation" />
-            <option value="$PROJECT_DIR$/mautils_gson_core_processor" />
             <option value="$PROJECT_DIR$/processor" />
             <option value="$PROJECT_DIR$/sample" />
+            <option value="$PROJECT_DIR$/sample/app" />
+            <option value="$PROJECT_DIR$/sample/core" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

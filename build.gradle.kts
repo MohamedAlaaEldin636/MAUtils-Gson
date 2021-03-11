@@ -30,12 +30,11 @@ buildscript {
     }
     
     dependencies {
-        classpath(Config.BuildPlugins.androidGradle)
+        classpath("com.android.tools.build:gradle:4.1.2")
 
-        classpath(Config.BuildPlugins.kotlinGradlePlugin)
-
-        classpath(Config.BuildPlugins.jitpack)
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31")
+
+        classpath("com.github.dcendents:android-maven-gradle-plugin:2.1")
     }
 
 }
@@ -48,9 +47,15 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        //gradlePluginPortal()
         maven { url = uri("https://jitpack.io") }
     }
+
+    /*tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+        kotlinOptions {
+            @Suppress("SuspiciousCollectionReassignment")
+            freeCompilerArgs += "-parameters"
+        }
+    }*/
 }
 
 tasks.register("clean", Delete::class) {
