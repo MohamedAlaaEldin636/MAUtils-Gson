@@ -34,6 +34,7 @@
             <option value="$PROJECT_DIR$/mautils_gson_core" />
             <option value="$PROJECT_DIR$/mautils_gson_core_annotation" />
             <option value="$PROJECT_DIR$/mautils_gson_core_processor" />
+            <option value="$PROJECT_DIR$/processor" />
             <option value="$PROJECT_DIR$/sample" />
           </set>
         </option>

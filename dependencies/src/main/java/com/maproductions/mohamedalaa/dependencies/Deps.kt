@@ -22,17 +22,32 @@ package com.maproductions.mohamedalaa.dependencies
  */
 object Deps {
 
-    val kotlin = KotlinGroup
+    val kotlin = Kotlin
 
-    val own_libs = OwnLibsGroup
+    val own_libs = OwnLibs
 
     val androidx = Androidx()
 
+    val kotlinx = Kotlinx
+
     const val gson = "com.google.code.gson:gson:${Versions.gson}"
+
+    const val kotlin_poet = "com.squareup:kotlinpoet:${Versions.kotlin_poet}"
+
+    // ---- Testing ---- //
 
     const val junit = "junit:junit:${Versions.test_junit}"
 
     const val robolectric = "org.robolectric:robolectric:${Versions.test_robolectric}"
+
+    // ---- Groups (might include testing as well isa) ---- //
+
+    object Kotlinx : BaseGroup() {
+        override val name: String
+            get() = "org.jetbrains.kotlinx"
+
+        val metadata = lib("kotlinx-metadata-jvm", Versions.kotlinx_metadata)
+    }
 
     class Androidx : BaseGroup() {
         override val name: String
@@ -62,11 +77,11 @@ object Deps {
 
     }
 
-    object OwnLibsGroup : EmptyBaseGroup() {
+    object OwnLibs : EmptyBaseGroup() {
         val annotation = ownLib("annotation")
     }
 
-    object KotlinGroup : SameVersionBaseGroup() {
+    object Kotlin : SameVersionBaseGroup() {
         override val name: String
             get() = "org.jetbrains.kotlin"
 

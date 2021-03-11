@@ -12,17 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-include(":processor")
-include(":core")
-include(":annotation")
-includeBuild("dependencies")
 
-include(":mautils_gson_core_processor")
-include(":mautils_gson_core_annotation")
-include(":mautils_gson_core")
-include(":feature:flow_1")
-include(":core_2")
-include(":sample")
-include(":core_1")
+package com.maproductions.mohamedalaa.processor.extensions;
 
-rootProject.name = "MAUtils Gson"
+import com.squareup.kotlinpoet.ClassName;
+import com.squareup.kotlinpoet.ParameterizedTypeName;
+import com.squareup.kotlinpoet.TypeName;
+
+import org.jetbrains.annotations.NotNull;
+
+public class KotlinpoetUtils {
+
+    @NotNull
+    public static TypeName parameterizedTypeName(ClassName receiver, TypeName... typeParams) {
+        return ParameterizedTypeName.get(receiver, typeParams);
+    }
+
+}

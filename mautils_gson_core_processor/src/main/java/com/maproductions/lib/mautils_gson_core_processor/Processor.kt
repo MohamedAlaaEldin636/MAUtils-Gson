@@ -88,6 +88,7 @@ class Processor : AbstractProcessor() {
         // object
         val objectClass = TypeSpec.objectBuilder(_AnnotationsConstants.generatedMASealedAbstractOrInterfaceSimpleName)
             .addFunction(function)
+            //.addOriginatingElement(originatingElement = roundEnv.getElementsAnnotatedWith(_AnnotationsConstants.maSealedAbstractOrInterfaceJClass).first())
             .build()
 
         // Accessing provider annotated classes to remove unused lint check on it isa.

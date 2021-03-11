@@ -30,9 +30,13 @@ object Versions {
 
     const val kotlin = "1.4.31"
 
-    const val plugin_android = "4.1.2"
-
     const val gson = "2.8.6"
+
+    const val kotlin_poet = "1.6.0"
+
+    const val kotlinx_metadata = "0.2.0"
+
+    // ---- Testing ---- //
 
     const val test_junit = "4.13.1"
     const val test_androidx_core = "1.3.0"
