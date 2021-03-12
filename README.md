@@ -11,9 +11,11 @@ Android Library built on top of [Gson](https://github.com/google/gson) to provid
     - [Jitpack Environment](#jitpack-environment-)
     - [Library](#library-)
         - [Case of using `core` module only](#case-of-using-core-module-only-)
-        - [Case of using `core` & `core_processor` modules](#case-of-using-core--core_processor-modules-)
+        - [Case of using `core` & `annotation` & `processor` modules](#case-of-using-core--annotation--processor-modules-)
         
 - [Features](#features-)
+    - [`core` module only](#core-module-only-)
+    - [`core` & `annotation` & `processor` modules](#core--annotation--processor-modules-)
 
 - [Usage Examples](#usage-examples-)
     - [Nested Type Parameters](#nested-type-parameters-)
@@ -31,7 +33,7 @@ Android Library built on top of [Gson](https://github.com/google/gson) to provid
 - [Jitpack Environment](#jitpack-environment-)
 - [Library](#library-)
     - [Case of using `core` module only](#case-of-using-core-module-only-)
-    - [Case of using `core` & `core_processor` modules](#case-of-using-core--core_processor-modules-)
+    - [Case of using `core` & `annotation` & `processor` modules](#case-of-using-core--annotation--processor-modules-)
 
 ### Jitpack Environment [▴](#install-)
 
@@ -53,7 +55,7 @@ allprojects {
 - X.Y.Z denotes app version which is [![](https://jitpack.io/v/MohamedAlaaEldin636/MAUtils-Gson.svg)](https://jitpack.io/#MohamedAlaaEldin636/MAUtils-Gson)
 
 - [Case of using `core` module only](#case-of-using-core-module-only-)
-- [Case of using `core` & `core_processor` modules](#case-of-using-core--core_processor-modules-)
+- [Case of using `core` & `annotation` & `processor` modules](#case-of-using-core--annotation--processor-modules-)
 
 #### Case of using `core` module only [▴](#library-)
 
@@ -66,18 +68,18 @@ plugins {
 }
 // ...
 dependencies {
-    implementation("com.github.MohamedAlaaEldin636.MAUtils-Gson:mautils_gson_core:X.Y.Z") {
+    implementation("com.github.MohamedAlaaEldin636.MAUtils-Gson:core:X.Y.Z") {
         // Opt-out from annotation since it's only useful with processor.
-        exclude("com.github.MohamedAlaaEldin636.MAUtils-Gson", "mautils_gson_core_annotation")
+        exclude("com.github.MohamedAlaaEldin636.MAUtils-Gson", "annotation")
     }
     // ...
 }
 ```
 
-#### Case of using `core` & `core_processor` modules [▴](#library-)
+#### Case of using `core` & `annotation` & `processor` modules [▴](#library-)
 
 - **Note** You can add `core` module to all modules you need in your Project, **But**
-`core_processor` module **Must** be added in your **app** module only this is a [limitation](#limitations-) of the library.
+`processor` module **Must** be added in your **app** module only this is a [limitation](#limitations-) of the library.
 
 - in your Gradle **Module-level** build file add below code
 
@@ -89,29 +91,42 @@ plugins {
 }
 // ...
 dependencies {
-    implementation("com.github.MohamedAlaaEldin636.MAUtils-Gson:mautils_gson_core:X.Y.Z")
+    implementation("com.github.MohamedAlaaEldin636.MAUtils-Gson:core:X.Y.Z")
     
     // REMEMBER below processor MUST only be added in app module.
-    kapt("com.github.MohamedAlaaEldin636.MAUtils-Gson:mautils_gson_core_processor:X.Y.Z")
+    kapt("com.github.MohamedAlaaEldin636.MAUtils-Gson:processor:X.Y.Z")
     // ...
 }
 ```
 
 ## Features [▴](#contents-)
 
+- [`core` module only](#core-module-only-)
+- [`core` & `annotation` & `processor` modules](#core--annotation--processor-modules-)
+
+### `core` module only [▴](#features-)
+
 1. support conversion to/from JSON just by using extension functions of `Any?.toJson` & `String?.fromJson`, instead of you generating `Gson` instance then perform conversion.
 
 2. (kotlin) object keyword(class) conversion maintains the same instance, which isn't supported by `Gson`.
 
-3. support conversion of **sealed classes** / **abstract classes** / **interfaces**
-this is only where the annotation is needed and only for root type Not needed for subclasses, **Note** you have to use `mautils_gson_core_processor` module for that to work, **Also Note** this is supported for kotlin consumer code only for now but in future it's planned to make processor support java as well.
+3. Supports conversions of types with type params even in case of nested type params no matter how deep nesting is, Without the use of `TypeToken` for kotlin consumer code
+(this is **temporary** not supported for **java** consumer code, this is a **temporary** [limitation](#limitations-) of the library) isa.
 
-4. Supports conversions of types with type params even in case of nested type params no matter how deep nesting is, Without the use of `TypeToken` for kotlin consumer code 
-(for **java** consumer code `GsonConverter` is needed in case of any type params like `TypeToken`) isa.
+4. support conversion for the above cases even if they are inside another class as a property, or even if inside another subclass of one the annotated classes, so supported nested conversion as well.
 
-5. support conversion for the above cases even if they are inside another class as a property, or even if inside another subclass of one the annotated classes, so supported nested conversion as well.
+5. have an extension functions for `Bundle` & `Intent` to put values via `Bundle.putJson` for any type whether supported by `Bundle` or not because if
+not supported a conversion to json will be made by `Any?.toJsonOrNull`, Also instead of specifying type in method name so single `Bundle.putJson`
+is better than several `putString`, `putInt` etc.
 
-6. Annotations Prcessor Supports any classes that the developer doesn't own (Ex. from 3rd paty library) by using `@MAProviderOfSealedAbstractOrInterface`, You can think of this as `@Provides` in Dagger library (If you don't know dagger it's ok, this was just an example to explain the annotation, you can instead read the annotation's documentation).
+6. Supports special classes conversions, Currently only `Uri` is supported via `toString` & `Uri.parse` to convert to/from `String` when using `toJson`/`fromJson` isa.
+
+### `core` & `annotation` & `processor` modules [▴](#features-)
+
+1. support conversion of **sealed classes** / **abstract classes** / **interfaces**
+this is only where the annotation is needed and only for root type Not needed for subclasses, **Note** you have to use `processor` module for that to work, **Also Note** this is supported for kotlin consumer code only for now but in future it's planned to make processor support java as well.
+
+2. Annotations Processor also Supports **sealed classes** / **abstract classes** / **interfaces** that the developer doesn't own (Ex. from 3rd party library) by using `@MAProviderOfSealedAbstractOrInterface`, You can think of this as `@Provides` in Dagger library (If you don't know dagger it's ok, this was just an example to explain the annotation, you can instead read the annotation's documentation).
 
 ## Usage Examples [▴](#contents-)
 
@@ -161,11 +176,15 @@ assertEquals(objectInstance, value) // Passed
 
 ### Sealed/Abstract/Interface Support [▴](#usage-examples-)
 
+- Requires `processor` module for below code to work isa.
+
 ``` kotlin
 // Declaration of classes 
+@MASealedAbstractOrInterface
 sealed class DataResult<T> {
     data class Success<T>(val value: T) : DataResult<T>()
 }
+@MASealedAbstractOrInterface
 sealed class UICountry(var isBookmarked: Boolean) {
     data class SmallInfoCountry(
         var name: String,
@@ -187,15 +206,18 @@ assertEquals(dataResult, value) // Passed
 
 ## Limitations [▴](#contents-)
 
-- When using `mautils_gson_core_processor` module it **Must** only be added in your **app** Module only (in it's gradle.build.kts file as shown via code [here](#case-of-using-core--core_processor-modules-))
+- When using `processor` module it **Must** only be added in your **app** Module only (in it's gradle.build.kts file as shown via code [here](#case-of-using-core--core_processor-modules-))
 
-- This is not a limitation but recommendation, Any subclass of the annotated class should either have no-args constructor or at least 1 constructor where it's params same as some or all of it's properties, **However** This can be ignored unless a problem in conversion happened, then you might check that recommendation.
+- Any subclass of the annotated class should either have no-args constructor or at least 1 constructor where it's params same as some or all of it's properties, **However** This can be ignored unless a problem in conversion happened, then you might check that recommendation.
+
+- **temporarily** No support for java consumer code, Just because I have a very limited time and this library is made to increase my own productivity of other projects,
+However it's planned to be supported in the future ASAP, Once I have some spare time.
 
 ## Additional Notes [▴](#contents-)
 
 - This library initially is a migration from my other library [MAUtils](https://github.com/MohamedAlaaEldin636/MAUtils), Migration happened since utilities to be in 1 library is very complex.
 
-- What happpned since migration is that before migration you could only use processor with classes of same module, and now it's ok to use classes from other modules whether they are in the same project that you work on OR from any other 3rd paty library.
+- What happened since migration is that before migration you could only use processor with classes of same module, and now it's ok to use classes from other modules whether they are in the same project that you work on OR from any other 3rd party library.
 
 ## [License](https://github.com/MohamedAlaaEldin636/MAUtils-Gson/blob/master/LICENSE) [▴](#contents-)
 
