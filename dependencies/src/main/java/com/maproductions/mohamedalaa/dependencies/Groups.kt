@@ -19,4 +19,6 @@ object Groups {
 
     const val github = "com.github.MohamedAlaaEldin636"
 
+    const val github_sample = "com.github.MohamedAlaaEldin636.sample"
+
 }

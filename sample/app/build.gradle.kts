@@ -23,6 +23,8 @@ plugins {
     kotlin("kapt")
 }
 
+group = Groups.github_sample
+
 android {
 
     compileSdkVersion(Versions.compile_sdk)
