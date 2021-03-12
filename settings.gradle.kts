@@ -12,8 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-include(":sample:app")
-include(":sample:core")
+
+if (System.getenv()["JITPACK"] != true.toString()) {
+    include(":sample:app")
+    include(":sample:core")
+}
+
 include(":core")
 include(":annotation")
 include(":processor")
