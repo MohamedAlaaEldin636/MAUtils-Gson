@@ -15,11 +15,13 @@
 
 package com.maproductions.mohamedalaa.core
 
+import android.net.Uri
 import com.google.gson.*
 import com.maproductions.mohamedalaa.core.internal.MAJsonDeserializer
 import com.maproductions.mohamedalaa.core.internal.MAJsonSerializer
 import com.maproductions.mohamedalaa.core.java.GsonConverter
 import com.maproductions.mohamedalaa.annotation._AnnotationsConstants
+import com.maproductions.mohamedalaa.core.internal.UriTypeAdapter
 import kotlin.Exception
 import kotlin.reflect.full.declaredFunctions
 
@@ -159,6 +161,9 @@ internal fun Gson.addTypeAdapters(): Gson {
 // ---- Private fun isa.
 
 private fun GsonBuilder.addTypeAdapters() {
+    // Register special classes isa.
+    registerTypeAdapter(Uri::class.java, UriTypeAdapter())
+
     allAnnotatedClasses.forEach {
         registerTypeAdapter(it, MAJsonSerializer())
         registerTypeAdapter(it, MAJsonDeserializer())

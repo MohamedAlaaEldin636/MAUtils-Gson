@@ -78,6 +78,11 @@ class ProcessorOfFullNames : AbstractProcessor() {
             return false
         }
 
+        // Exclude special classes isa.
+        fullNamesList = fullNamesList - listOf(
+            "android.net.Uri"
+        )
+
         // function
         val function = buildFunSpec(fullNamesList.distinct())
 

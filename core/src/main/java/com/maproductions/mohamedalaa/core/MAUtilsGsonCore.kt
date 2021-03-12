@@ -22,6 +22,15 @@ import com.google.gson.Gson
 object MAUtilsGsonCore {
 
     /**
+     * - Default [Gson] object used for serialization/deserialization, the generated object is created by below code isa.
+     * ```
+     * GsonBuilder()
+     *      .serializeNulls()
+     *      .setLenient()
+     *      .enableComplexMapKeySerialization()
+     *      .create()
+     * ```
+     *
      * @return default [Gson] used by the library when you use [toJson] with no args isa.
      */
     @JvmStatic

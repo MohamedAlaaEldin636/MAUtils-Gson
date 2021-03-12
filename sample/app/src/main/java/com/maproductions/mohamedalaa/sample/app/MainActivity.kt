@@ -34,8 +34,6 @@ class MainActivity : AppCompatActivity() {
         }.getOrElse {
             Timber.e("ERRORRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR\n-> $it")
         }
-        
-        // todo try to use META INF for incremental processing but later isa.
     }
 
     @Suppress("LocalVariableName")
