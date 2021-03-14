@@ -36,6 +36,42 @@ import javax.lang.model.element.TypeElement
  * - Creates a single fun in an object in a file that returns a [List] of the full names of all
  * annotated types by [MASealedAbstractOrInterface] and all classes declared as params in
  * all [MAProviderOfSealedAbstractOrInterface] annotations isa.
+ *
+ * ## Steps
+ *
+ * - Annotations and kapt can be in any module not just app isa,
+ * even if can't delete but check existence isa, make special pattern ex. sameName1, 2, 3 etc...
+ * and get it dynamically if exists isa.
+ *
+ * - In case a module already created the kt file delete it after reading it's content
+ * then create a new one code required for that is
+ * ```
+ * val v = processingEnv.filer.getResource(
+ * StandardLocation.SOURCE_OUTPUT,
+ * "", // package
+ * "test.txt" // simple name .kt
+ * )
+ * v.delete()
+ *
+ * var jfo: FileObject =
+ * processingEnv.filer.getResource(StandardLocation.SOURCE_OUTPUT, "", "test.txt")
+ * val msg: String = TUtils.JFOToString(jfo) // Reads FileObject as String
+ * jfo.openReader(true).forEachLine {  }
+ * jfo.openReader(true).readLines()
+ * // or .use\lines for auto .close
+ * // then create a new one via the kotlinpoet API
+ * ```
+ *
+ * - Use metadata for both of the APIs isa. @Metadata
+ *
+ * - Use new API approach for @MAProvider to be a data class and variables
+ * have classes that are needed
+ *
+ * - In core api on registering adapters
+ * have 2 types 1 for sealed abstract and interface and 1 for others
+ * where no special json conversion except when deserialize fails isa.
+ *
+ * - so kotlin.String will be converted safely even if added isa.
  */
 @SupportedAnnotationTypes(
     "com.maproductions.mohamedalaa.annotation.MASealedAbstractOrInterface",

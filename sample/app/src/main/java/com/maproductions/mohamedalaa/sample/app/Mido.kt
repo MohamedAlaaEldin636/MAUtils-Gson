@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-@file:Suppress("ClassName", "unused")
+package com.maproductions.mohamedalaa.sample.app
 
-package com.maproductions.mohamedalaa.sample.app.extensions
-
+import com.maproductions.mohamedalaa.annotation.DelLater
 import com.maproductions.mohamedalaa.annotation.MAProviderOfSealedAbstractOrInterface
-import com.maproductions.mohamedalaa.sample.core.DataResult
-import com.maproductions.mohamedalaa.sample.core.UICountry
 
-//@MASealedAbstractOrInterface // Can be used, but not needed in the example.
 @MAProviderOfSealedAbstractOrInterface(
-    DataResult::class,
-    UICountry::class,
-    //String::class,
-    //java.lang.String::class,
-    //DataResult.Error::class, // Not needed at all.
+    kotlin.String::class
 )
-interface _ProviderOfSealedAbstractOrInterface
+class Mido {
 
+    @DelLater
+    val s: String = "sas"
+
+}

@@ -24,6 +24,16 @@ import com.maproductions.mohamedalaa.sample.core.DataResult
 import com.maproductions.mohamedalaa.sample.core.UICountry
 import timber.log.Timber
 
+/*
+ * TODO IN CORE
+ *  ignore primitives and String for both java and kotlin isa.
+ *  cuz in @MAProviding adding string issues appear isa.
+ *
+ * TODO IN PROCESSOR
+ *  back to previous approach since this one still keeps java not kotlin values isa.
+ *  BUT
+ *  how ?! see room approach of converting to kotlin isa.
+ */
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

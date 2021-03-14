@@ -24,25 +24,11 @@ plugins {
     id("kotlin")
 
     id("com.github.dcendents.android-maven")
-
-    //id("com.github.gmazzo.buildconfig") version "3.0.0"
 }
-
-/*buildConfig {
-    useKotlinOutput()
-
-    buildConfigField(
-        "String",
-        "PROCESSOR_OF_FULL_NAMES_FILE_PATH",
-        project.property("PROCESSOR_OF_FULL_NAMES_FILE_PATH") as String
-    )
-}*/
 
 group = Groups.github
 
 dependencies {
-    //project.property("PROCESSOR_OF_FULL_NAMES_FILE_PATH") as String
-
     implementation(fileTree(dirLibsIncludeJar()))
 
     implementation(project(Deps.own_libs.annotation))
@@ -50,6 +36,8 @@ dependencies {
     implementation(Deps.kotlin.stdlib_jdk8)
 
     implementation(Deps.kotlin_poet)
+    implementation("com.squareup:kotlinpoet-metadata:1.6.0")
+    implementation("com.squareup:kotlinpoet-metadata-specs:1.6.0")
 
     implementation(Deps.kotlinx.metadata)
 }
