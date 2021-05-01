@@ -15,23 +15,13 @@
 
 package com.maproductions.mohamedalaa.processor
 
-import com.maproductions.mohamedalaa.annotation.DelLater
-import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
-import com.squareup.kotlinpoet.metadata.specs.toTypeSpec
-import com.squareup.kotlinpoet.metadata.toImmutableKmClass
-import kotlinx.metadata.KmClassifier
-import java.io.*
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedAnnotationTypes
 import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
-import javax.lang.model.element.VariableElement
-import javax.tools.FileObject
-import javax.tools.StandardLocation
-
 
 /*
 todo
@@ -83,6 +73,15 @@ class ProcessorDelLater : AbstractProcessor() {
      * - so kotlin.String will be converted safely even if added isa.
      */
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment?): Boolean {
+        return false
+    }
+
+    /*
+    {
+        if (true) {
+            return false
+        }
+
         if (annotations == null || roundEnv == null) {
             return false
         }
@@ -205,5 +204,6 @@ class ProcessorDelLater : AbstractProcessor() {
 
         return false
     }
+     */
 
 }

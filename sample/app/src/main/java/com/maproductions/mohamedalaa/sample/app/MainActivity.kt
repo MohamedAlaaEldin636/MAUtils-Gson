@@ -18,10 +18,13 @@ package com.maproductions.mohamedalaa.sample.app
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.annotation.IntRange
-import com.maproductions.mohamedalaa.core.fromJson
-import com.maproductions.mohamedalaa.core.toJson
+import com.google.gson.GsonBuilder
+import com.maproductions.mohamedalaa.core.*
 import com.maproductions.mohamedalaa.sample.core.DataResult
 import com.maproductions.mohamedalaa.sample.core.UICountry
+import com.maproductions.mohamedalaa.sample.core.normal_gson_same_field_name.AnnDC2
+import com.maproductions.mohamedalaa.sample.core.normal_gson_same_field_name.DC1
+import com.maproductions.mohamedalaa.sample.core.normal_gson_same_field_name.OpenClass2
 import timber.log.Timber
 
 /*
@@ -40,6 +43,40 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         kotlin.runCatching {
+            if (true) {
+                val openClass2 = OpenClass2()
+
+                val j2 = DC1("mido")
+
+                val o3 = listOf(
+                    5 to Pair(9, j2)
+                )
+
+                val gson = GsonBuilder()
+                    .serializeNulls()
+                    .setLenient()
+                    .enableComplexMapKeySerialization()
+                    .create()
+
+                Timber.e("gson.toJson(j2) -> ${gson.toJson(j2)}")
+                Timber.e("j2 -> $j2")
+                Timber.e("j2 -> ${j2.toJsonOrNull()}")
+                Timber.e("Ann -> ${AnnDC2("Abo \" Alaa").toJsonOrNull()}")
+                Timber.e("o3 -> $o3")
+                Timber.e("o3 -> ${o3.toJsonOrNull()}")
+
+                val j1 = openClass2.toJsonOrNull()
+
+                val v1 = j1.fromJsonOrNull<OpenClass2>()
+
+                Timber.e("j1 -> $j1")
+                Timber.e(v1?.toString() ?: "NULL")
+                Timber.e((openClass2 == v1).toString())
+                Timber.e((openClass2 === v1).toString())
+
+                return@runCatching
+            }
+
             smallTests()
         }.getOrElse {
             Timber.e("ERRORRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR\n-> $it")

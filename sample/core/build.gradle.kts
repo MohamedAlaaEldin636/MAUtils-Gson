@@ -28,6 +28,8 @@ android {
     compileSdkVersion(Versions.compile_sdk)
     buildToolsVersion(Versions.build_tools)
 
+    testOptions.unitTests.isIncludeAndroidResources = true
+
     defaultConfig {
         minSdkVersion(Versions.min_sdk)
         targetSdkVersion(Versions.target_sdk)

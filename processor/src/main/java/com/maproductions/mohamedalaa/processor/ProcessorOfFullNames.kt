@@ -18,9 +18,16 @@ package com.maproductions.mohamedalaa.processor
 import com.maproductions.mohamedalaa.annotation.MAProviderOfSealedAbstractOrInterface
 import com.maproductions.mohamedalaa.annotation.MASealedAbstractOrInterface
 import com.maproductions.mohamedalaa.annotation._AnnotationsConstants
+import com.maproductions.mohamedalaa.processor.custom_classes.SpecialAbstractProcessor
 import com.maproductions.mohamedalaa.processor.extensions.*
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
+import com.squareup.kotlinpoet.metadata.toImmutableKmClass
+import kotlinx.metadata.KmClassifier
+import java.io.File
+import java.io.FileWriter
 import java.io.IOException
+import java.io.PrintWriter
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedAnnotationTypes
@@ -29,10 +36,6 @@ import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
 
 /**
- * - **aggregating** incremental annotation processor isa.
- *
- * - **User** of this processor must include `-parameters` compiler argument isa.
- *
  * - Creates a single fun in an object in a file that returns a [List] of the full names of all
  * annotated types by [MASealedAbstractOrInterface] and all classes declared as params in
  * all [MAProviderOfSealedAbstractOrInterface] annotations isa.
@@ -72,41 +75,30 @@ import javax.lang.model.element.TypeElement
  * where no special json conversion except when deserialize fails isa.
  *
  * - so kotlin.String will be converted safely even if added isa.
+ *
+ * todo delete kapt generated file and read contents and then regenerate with same + new contents isa.
  */
+@KotlinPoetMetadataPreview
 @SupportedAnnotationTypes(
     "com.maproductions.mohamedalaa.annotation.MASealedAbstractOrInterface",
     "com.maproductions.mohamedalaa.annotation.MAProviderOfSealedAbstractOrInterface",
 )
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-class ProcessorOfFullNames : AbstractProcessor() {
+class ProcessorOfFullNames : SpecialAbstractProcessor() {
 
-    override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment?): Boolean {
-        if (annotations == null || roundEnv == null) {
-            return false
-        }
+    // todo finish all above steps isa, deletions and 2 types isa.
 
+    private val specialClasses = listOf(
+        "android.net.Uri"
+    )
+
+    override fun processAnnotation(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
         var fullNamesList = roundEnv.getElementsAnnotatedWith(MASealedAbstractOrInterface::class.java)
-            .filterIsInstance<TypeElement>().map { it.qualifiedName.toString() }
+            .filterIsInstance<TypeElement>().map { it.toImmutableKmClass().name.replaceForwardSlashWithDot() }
 
         for (element in roundEnv.getElementsAnnotatedWith(MAProviderOfSealedAbstractOrInterface::class.java).filterIsInstance<TypeElement>()) {
-            var maProviderOfSealedAbstractOrInterface = MAProviderOfSealedAbstractOrInterface::class.toString()
-            maProviderOfSealedAbstractOrInterface = maProviderOfSealedAbstractOrInterface.substring(maProviderOfSealedAbstractOrInterface.indexOf(" ").inc())
-
-            val annotationMirror = element.annotationMirrors.firstOrNull {
-                it.annotationType.toString() == maProviderOfSealedAbstractOrInterface
-            } ?: continue
-
-            var fullNames /* Array of fullNames */ = annotationMirror.elementValues.entries
-                .firstOrNull()?.value?.toString() ?: continue
-
-            fullNames = fullNames.replace("{", "")
-            fullNames = fullNames.replace("}", "")
-            fullNames = fullNames.replace(" ", "")
-
-            fullNamesList = fullNamesList + fullNames.split(",").map {
-                val index = it.lastIndexOf(".class")
-
-                it.substring(0, index)
+            fullNamesList = fullNamesList + element.toImmutableKmClass().properties.mapNotNull {
+                (it.returnType.classifier as? KmClassifier.Class)?.name?.replaceForwardSlashWithDot()
             }
         }
 
@@ -115,9 +107,7 @@ class ProcessorOfFullNames : AbstractProcessor() {
         }
 
         // Exclude special classes isa.
-        fullNamesList = fullNamesList - listOf(
-            "android.net.Uri"
-        )
+        fullNamesList = fullNamesList - specialClasses
 
         // function
         val function = buildFunSpec(fullNamesList.distinct())

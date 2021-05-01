@@ -15,14 +15,10 @@
 
 package com.maproductions.mohamedalaa.sample.core
 
-import com.maproductions.mohamedalaa.annotation.DelLater
-
 object ClassA {
 
-    @DelLater
     const val propertyString1: String = ""
 
-    @DelLater
     var propertyString2: String = ""
 
 }

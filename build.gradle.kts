@@ -23,16 +23,15 @@ apply(plugin = "dependencies")
 
 buildscript {
 
-    val kotlin_version by extra("1.4.31")
     repositories {
         google()
         jcenter()
     }
     
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.2")
+        classpath("com.android.tools.build:gradle:4.1.3")
 
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32")
 
         classpath("com.github.dcendents:android-maven-gradle-plugin:2.1")
     }

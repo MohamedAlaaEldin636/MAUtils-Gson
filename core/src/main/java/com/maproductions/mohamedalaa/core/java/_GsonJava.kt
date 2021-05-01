@@ -20,114 +20,97 @@ package com.maproductions.mohamedalaa.core.java
 
 import com.google.gson.Gson
 import com.google.gson.internal.`$Gson$Types`
-import com.maproductions.mohamedalaa.core.addTypeAdapters
+import com.maproductions.mohamedalaa.core.*
 import com.maproductions.mohamedalaa.core.internal.canonicalizeOrNull
 import com.maproductions.mohamedalaa.core.privateGeneratedGson
-import com.maproductions.mohamedalaa.annotation.MASealedAbstractOrInterface
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 /**
+ * - Same as [Gson.toJson] isa, **But** might make a change to the output of the json value
+ * to be able in future to deserialize what was impossible to be deserialized
+ * (an abstract class instance for example) isa.
+ *
  * ### CAUTION
  * 1. This should only be used by java consumer code isa.
- * 2. If the type has type params then you have to use [GsonConverter.toJsonOrNull] instead isa.
+ * 2. If the type has type params then you have to use [GsonConverter] instead isa.
  *
- * ### Usage
- * - Converts `receiver` object to a JSON String OR `null` in case of any error isa.
- * - [elementClass] param isn't needed to be provided as [Class] will be inferred from `receiver`
- * **BUT** needed in case of using `superclass` of the given `receiver` which is needed in
- * case of classes annotated with [MASealedAbstractOrInterface] isa.
- *
- * @param gson in case you want a special configuration for [Gson], Note default value used is [privateGeneratedGson] isa.
- *
- * @return JSON String OR `null` if any problem occurs isa.
- *
- * @see toJsonJava
+ * @see toJsonOrNullJava
+ * @see fromJsonJava
  * @see fromJsonOrNullJava
  */
 @JvmOverloads
-@JvmName("toJsonOrNull")
-fun <E> E?.toJsonOrNullJava(elementClass: Class<E>? = null, gson: Gson? = null): String? = this?.run {
-    val usedGson = gson?.addTypeAdapters() ?: privateGeneratedGson
+@JvmName("toJson")
+fun <E> E?.toJsonJava(elementClass: Class<E>? = null, gson: Gson? = null): String = this?.run {
+    val usedGson = gson ?: privateGeneratedGson
 
-    try {
-        if (elementClass == null) {
-            usedGson.toJson(this)
-        }else {
-            usedGson.toJson(this, elementClass)
-        }
-    } catch (e: Exception) { null }
-}
+    if (elementClass == null) {
+        usedGson.toJson(this)
+    }else {
+        usedGson.toJson(this, elementClass)
+    }
+} ?: throw RuntimeException("Can't convert `null` to JSON String")
 
 /**
- * - Same as [toJsonOrNullJava] but throws [RuntimeException] in case of any problems instead of
- * returning `null` isa.
+ * - Same as [toJsonJava] but returns `null` instead of throwing an exception isa.
  *
- * @throws RuntimeException in case if any problem occurred while converting isa.
- *
- * @see toJsonOrNullJava
+ * @see toJsonJava
+ * @see fromJsonOrNullJava
  * @see fromJsonJava
  */
 @JvmOverloads
-@JvmName("toJson")
-fun <E> E?.toJsonJava(elementClass: Class<E>? = null, gson: Gson? = null): String = toJsonOrNullJava(elementClass, gson)
-    ?: throw RuntimeException("Cannot convert $this to JSON String")
+@JvmName("toJsonOrNull")
+fun <E> E?.toJsonOrNullJava(elementClass: Class<E>? = null, gson: Gson? = null): String? = runCatching {
+    toJsonJava(elementClass, gson)
+}.getOrNull()
 
 /**
+ * - Same as [Gson.fromJson] isa, and it can deserialize special serialization done by [toJsonJava],
+ * **However** It must be the same [gson] used (whether `null` or non-null same instance) isa.
+ *
  * ### CAUTION
  * 1. This should only be used by java consumer code isa.
- * 2. If the type has type params then you have to use [GsonConverter.fromJsonOrNull] instead isa.
+ * 2. If the type has type params then you have to use [GsonConverter] instead isa.
  *
- * ### Usage
- * - Converts `this JSON String` to object of type [E], OR null in case of any error occurs isa.
- *
- * @param elementClass [Class] of the of type [E] to be used isa.
- * @param gson in case you want a special configuration for [Gson], Note default value used is [privateGeneratedGson] isa.
- *
- * @param E type to be converted to, from given JSON String.
- *
- * @return object of type [E] from given JSON String OR null if any problem occurs isa.
- *
- * @see fromJsonJava
+ * @see fromJsonOrNullJava
+ * @see toJsonJava
  * @see toJsonOrNullJava
  */
 @JvmOverloads
-@JvmName("fromJsonOrNull")
-fun <E> String?.fromJsonOrNullJava(elementClass: Class<E>, gson: Gson? = null): E? = this?.run {
+@JvmName("fromJson")
+fun <E> String?.fromJsonJava(elementClass: Class<E>, gson: Gson? = null): E = this?.run {
     (elementClass as? Class<*>)?.kotlin?.objectInstance?.apply {
         @Suppress("UNCHECKED_CAST")
         return@run this as E?
     }
 
-    val usedGson = gson?.addTypeAdapters() ?: privateGeneratedGson
+    val usedGson = gson ?: privateGeneratedGson
 
-    try { usedGson.fromJson(this, elementClass) } catch (e: Exception) { null }
-}
+    usedGson.fromJson(this, elementClass)
+} ?: throw RuntimeException("Can't convert `null` to a non-null object of type $elementClass")
 
 /**
- * - Same as [fromJsonOrNullJava] but throws [RuntimeException] in case of any problems instead of
- * returning `null` isa.
+ * - Same as [fromJsonJava] but returns `null` instead of throwing an exception isa.
  *
- * @throws RuntimeException in case if any problem occurred while converting isa.
- *
- * @see fromJsonOrNullJava
+ * @see fromJsonJava
+ * @see toJsonOrNullJava
  * @see toJsonJava
  */
 @JvmOverloads
-@JvmName("fromJson")
-fun <E> String?.fromJsonJava(elementClass: Class<E>, gson: Gson? = null): E = fromJsonOrNullJava(elementClass, gson)
-    ?: throw RuntimeException("Cannot convert $this to $elementClass")
+@JvmName("fromJsonOrNull")
+fun <E> String?.fromJsonOrNullJava(elementClass: Class<E>, gson: Gson? = null): E? = runCatching {
+    fromJsonJava(elementClass, gson)
+}.getOrNull()
 
 /**
  * ### CAUTION
  * - Should be used only for java consumer code, Not for kotlin consumer code which instead should
- * use [com.maproductions.mohamedalaa.core.fromJsonOrNull], [com.maproductions.mohamedalaa.core.fromJson],
- * [com.maproductions.mohamedalaa.core.toJsonOrNull] OR [com.maproductions.mohamedalaa.core.toJson] isa.
+ * use [fromJsonOrNull], [fromJson], [toJsonOrNull] OR [toJson] isa.
  *
  * ### Description
  * - Used only if your Object that needs to be converted to/from JSON-String has type parameters isa,
- * Otherwise consider using [String.fromJsonOrNullJava], [String.fromJsonJava],
- * [String.toJsonOrNullJava] OR [String.toJsonJava] isa.
+ * Otherwise consider using `GsonUtils` functions -> [fromJsonOrNullJava], [fromJsonJava],
+ * [toJsonOrNullJava] OR [toJsonJava] isa.
  *
  * ### How to use
  * ```
@@ -143,7 +126,8 @@ fun <E> String?.fromJsonJava(elementClass: Class<E>, gson: Gson? = null): E = fr
  * assertEquals(customWithTypeParam, fromJsonObject) // true.
  * ```
  *
- * @param gson in case you want a special configuration for [Gson], Note default value used is [privateGeneratedGson] isa.
+ * @param gson in case you want a special configuration for [Gson], Note default value used is
+ * [MAGson.getLibUsedGson] isa.
  *
  * @param E type to convert to/from JSON String.
  */
@@ -152,59 +136,33 @@ abstract class GsonConverter<E>(private val gson: Gson? = null) {
     internal companion object;
 
     /**
-     * - Converts [element] object to a JSON String OR null in case of any error isa.
-     *
-     * - If [element]'s type [E] has no type parameters Use [String.toJsonOrNullJava] instead,
-     * since it's more concise syntax isa.
-     *
-     * @return JSON String or null if any problem occurs isa.
-     */
-    fun toJsonOrNull(element: E?): String? {
-        val type = getSuperclassTypeParameter(javaClass)
-
-        val usedGson = gson?.addTypeAdapters() ?: privateGeneratedGson
-
-        return try { usedGson.toJson(element, type) } catch (e: Exception) { null }
-    }
-
-    /**
-     * - Same as [toJsonOrNull] but throws [RuntimeException] in case of any problems instead of
-     * returning `null` isa.
+     * - Same as [Gson.toJson] isa.
      *
      * @throws RuntimeException in case of any error while converting isa.
      */
-    fun toJson(element: E?): String = toJsonOrNull(element)
-        ?: throw RuntimeException("Cannot convert $element to JSON String")
+    fun toJson(element: E): String {
+        val type = getSuperclassTypeParameter(javaClass)
+
+        val usedGson = gson ?: privateGeneratedGson
+
+        return usedGson.toJson(element, type)
+    }
 
     /**
-     * - Converts [json] to object of type [E], or null in case of any error occurs isa.
-     *
-     * - If [E] has no type parameters Use [String.fromJsonOrNullJava] instead,
-     * since it's more concise syntax isa.
-     *
-     * @return object of type <E> from given JSON String or null if any problem occurs isa.
+     * - Same as [Gson.fromJson] isa.
      */
-    fun fromJsonOrNull(json: String?): E? {
+    fun fromJson(json: String): E {
         val type = getSuperclassTypeParameter(javaClass)
 
         (type as? Class<*>)?.kotlin?.objectInstance?.apply {
             @Suppress("UNCHECKED_CAST")
-            return this as E?
+            return this as E
         }
 
-        val usedGson = gson?.addTypeAdapters() ?: privateGeneratedGson
+        val usedGson = gson ?: privateGeneratedGson
 
-        return try { usedGson.fromJson(json, type) } catch (e: Exception) { null }
+        return usedGson.fromJson(json, type)
     }
-
-    /**
-     * - Same as [fromJsonOrNull] but throws [RuntimeException] in case of any problems instead of
-     * returning `null` isa.
-     *
-     * @throws RuntimeException in case of any error while converting isa.
-     */
-    fun fromJson(json: String?): E = fromJsonOrNull(json)
-        ?: throw RuntimeException("Cannot convert $json to <E>")
 
     /** Gets full [Type] info without erasure for conversion using [Gson] isa. */
     private fun getSuperclassTypeParameter(subclass: Class<*>): Type {
@@ -215,6 +173,12 @@ abstract class GsonConverter<E>(private val gson: Gson? = null) {
         }
 
         val parameterizedType = superclass as ParameterizedType
+
+        // NOTION -> superclass represents generic type with type params even <? extends Pair> etc...
+        // canonicalize represents Type however keeps type parameters correct as well isa.
+        // BUT
+        // my own canonicalize doesn't keep ? extends while other one does it
+
         return GsonConverter.canonicalizeOrNull(
             parameterizedType.actualTypeArguments[0]
         ) ?: `$Gson$Types`.canonicalize(parameterizedType.actualTypeArguments[0])

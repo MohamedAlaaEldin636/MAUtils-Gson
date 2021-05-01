@@ -15,22 +15,24 @@
 
 package com.maproductions.mohamedalaa.annotation
 
-import kotlin.reflect.KClass
-
 /**
- * - Has same effect as [MASealedAbstractOrInterface], **But** used with classes that doesn't exist
- * in the module that you used "kapt" (this library) in it, so when you use other 3rd party library
- * or even another library module in the same project add the needed classes in this annotation isa,
- * instead of [MASealedAbstractOrInterface] since you don't own them isa.
+ * - Has same effect as [MASealedAbstractOrInterface], **But** used with classes that you don't own,
+ * Which means you can't annotate them with [MASealedAbstractOrInterface], so when you use other
+ * 3rd party library or even another library module in the same project add the needed classes in
+ * this annotation isa, instead of [MASealedAbstractOrInterface] since you don't own them isa.
  *
  * - Note annotated class with this annotation will be ignored, yet it will be accessed so after
  * compilation the unused lint warning won't appear isa, However you still can annotate it
  * with [MASealedAbstractOrInterface] in case you want it to be annotated with it isa.
  *
- * @param value shouldn't be empty, Otherwise it's useless isa.
+ * ## How to Use
+ *
+ * 1. Create a data class or any class with properties of classes that you want them to be specially
+ * converted to json (i.e. abstract classes), if any of the classes has type param(s) just use '*'
+ * which is any class isa.
+ *
+ * 2. Annotate that data class with this annotation isa.
  */
 @Retention(AnnotationRetention.BINARY)
 @Target(AnnotationTarget.CLASS)
-annotation class MAProviderOfSealedAbstractOrInterface(
-    vararg val value: KClass<*>,
-)
+annotation class MAProviderOfSealedAbstractOrInterface

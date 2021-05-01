@@ -37,7 +37,7 @@ import java.io.Serializable
  * so on retrieving the value the Type must be nullable isa.
  *
  * @param gson if `null` then default [Gson] instance will be used which can be retrieved via
- * [MAUtilsGsonCore.getLibUsedGson] isa.
+ * [MAGson.getLibUsedGson] isa.
  */
 fun Bundle.putJson(key: String?, value: Any?, gson: Gson? = null) {
     addValueAndGetErrorMsgIfNotAdded(key, value)?.also {

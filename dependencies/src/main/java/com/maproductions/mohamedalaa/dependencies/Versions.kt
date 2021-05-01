@@ -28,7 +28,7 @@ object Versions {
 
     const val jvm_1_8 = "1.8"
 
-    const val kotlin = "1.4.31"
+    const val kotlin = "1.4.32"
 
     const val gson = "2.8.6"
 
@@ -37,6 +37,8 @@ object Versions {
     const val material = "1.3.0"
 
     const val kotlin_poet = "1.6.0"
+
+    const val colored_console = "1.1.1"
 
     const val kotlinx_metadata = "0.2.0"
 

@@ -34,10 +34,12 @@ package com.maproductions.mohamedalaa.annotation
  * ```
  *
  * - Not only that but also if a field inside a class with AbstractClass as a type
- * that class can be serialized/deserialized correctly without any problem isa.
+ * that class can be serialized/deserialized correctly without any problem isa,
+ * **Also** object class can be annotated so that on deserialization we keep the same instance isa,
+ * to keep the Singleton pattern that object is meant to keep isa.
  *
- * ### Limitations
- * - You need to use processor of this annotation in the "app" module only isa.
+ * - Don't forget to use the processor of this annotation in the same module
+ * this annotation is used in, even if used in several modules (multi-module project) isa.
  *
  * @see MAProviderOfSealedAbstractOrInterface
  */

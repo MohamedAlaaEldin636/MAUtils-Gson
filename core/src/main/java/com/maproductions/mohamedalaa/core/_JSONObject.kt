@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.maproductions.mohamedalaa.sample.app
+package com.maproductions.mohamedalaa.core
 
-import com.maproductions.mohamedalaa.annotation.MAProviderOfSealedAbstractOrInterface
-import com.maproductions.mohamedalaa.sample.core.normal_gson_same_field_name.AnnDC2
+import org.json.JSONObject
 
-@MAProviderOfSealedAbstractOrInterface
-class Mido {
+/**
+ * - Uses [JSONObject.put] but throws exception if [key] already exists isa.
+ */
+fun JSONObject.putOrThrow(key: String, value: Any?) {
+    if (has(key)) {
+        throw IllegalArgumentException("Same key for mapping used key ==> $key")
+    }
 
-    lateinit var string: String
-
-    var int: Int = 0
-
-    lateinit var annDC2: AnnDC2
-
-    //lateinit var list: List<*> todo what if List<Int> will it only enters my serilizer if is List<Int> isa ?!
-    // also before that check what the processor translates it to ?!?!
-
+    put(key, value)
 }
+
+//fun JSONObject.get

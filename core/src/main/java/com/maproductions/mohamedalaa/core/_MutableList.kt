@@ -15,4 +15,16 @@
 
 package com.maproductions.mohamedalaa.core
 
-fun Any?.toStringOrEmpty(): String = this?.toString() ?: ""
+/**
+ * - Same as [firstOrNull], and if an element is found then [MutableList.removeAt] will be used
+ * to remove the found element from the `receiver` list isa.
+ */
+fun <T> MutableList<T>.firstOrNullWithRemoval(predicate: (T) -> Boolean): T? {
+    val index = indexOfFirstOrNull(predicate) ?: return null
+
+    val item = this[index]
+
+    removeAt(index)
+
+    return item
+}

@@ -22,100 +22,70 @@ import com.maproductions.mohamedalaa.core.internal.MAJsonSerializer
 import com.maproductions.mohamedalaa.core.java.GsonConverter
 import com.maproductions.mohamedalaa.annotation._AnnotationsConstants
 import com.maproductions.mohamedalaa.core.internal.UriTypeAdapter
-import kotlin.Exception
+import java.lang.reflect.Field
+import java.lang.reflect.Type
 import kotlin.reflect.full.declaredFunctions
 
 /**
- * ### Usage
- * - Converts `receiver` ( JSON String ) to object of type [E], or null in case of any error occurs isa.
+ * - Same as [Gson.toJson] isa, **But** might make a change to the output of the json value
+ * to be able in future to deserialize what was impossible to be deserialized
+ * (an abstract class instance for example) isa.
  *
- * ### Warnings
- * - **(Compile time checks, Note below example)**
- * ```
- * val list = listOf(6, null, 53) // Nullable elements list (Nullable type parameter)
- * val jsonString = list.toJson()
- * // below code makes no error will occur however rList is currently actually List<Int?>?
- * val rList: List<Int> = jsonString.fromJson()
- * // can't even loop through the list without throwing NullPointerException isa.
- * assertTrue {
- *      runCatching {
- *          @Suppress("SENSELESS_COMPARISON")
- *          rList.any { it == null }
- *          // Not reached code isa.
- *          false
- *      }.getOrElse {
- *          it is NullPointerException
- *      }
- * }
- * // so to workaround it, either be sure 100% type parameter is not null
- * or BETTER use nullable type parameters isa.
- * val listOfInts: List<Int?>? = jsonString.fromJsonOrNullJava()
- * ```
- *
- * - There might be changes to the format of the produced JSON String when using [toJsonOrNull] or [toJson]
- * ONLY in special cases, Ex. JSON do not support abstract classes conversion but here we do support
- * it by tweaking the produced JSON a little isa, But again if that special case isn't there
- * then the conversion will be like any Standard JSON format isa.
- *
- * @param gson in case you want a special configuration for [Gson], Note default value used is [privateGeneratedGson] isa.
- *
- * @param E tye to convert to, from given JSON String isa.
- *
- * @return object of type [E] from given JSON String or null if any problem occurs isa.
- *
- * @see fromJson
  * @see toJsonOrNull
+ * @see fromJson
+ * @see fromJsonOrNull
  */
-inline fun <reified E> String?.fromJsonOrNull(gson: Gson? = null): E? = this?.run {
+inline fun <reified E> E?.toJson(gson: Gson? = null): String = this?.run {
+    val usedGson = gson ?: privateGeneratedGson
+
+    object : GsonConverter<E>(usedGson){}.toJson(this)
+} ?: throw RuntimeException("Can't convert `null` to JSON String")
+
+/**
+ * - Same as [toJson] but returns `null` instead of throwing an exception isa.
+ *
+ * @see toJson
+ * @see fromJson
+ * @see fromJsonOrNull
+ */
+inline fun <reified E> E?.toJsonOrNull(gson: Gson? = null): String? = runCatching {
+    toJson<E>(gson)
+}.getOrNull()
+
+/**
+ * - Same as [Gson.fromJson] isa, and it can deserialize special serialization done by [toJson],
+ * **However** It must be the same [gson] used (whether `null` or non-null same instance) isa.
+ *
+ * @see fromJsonOrNull
+ * @see toJsonOrNull
+ * @see toJson
+ */
+inline fun <reified E> String?.fromJson(gson: Gson? = null): E = this?.run {
     E::class.objectInstance?.apply {
         return@run this
     }
 
-    val usedGson = gson?.addTypeAdapters() ?: privateGeneratedGson
+    val usedGson = gson ?: privateGeneratedGson
 
-    try { object : GsonConverter<E>(usedGson){}.fromJsonOrNull(this) } catch (e: Exception) { null }
-}
+    object : GsonConverter<E>(usedGson){}.fromJson(this)
+} ?: throw RuntimeException("Can't convert `null` to a non-null object of type ${E::class}")
 
 /**
- * - Same as [fromJsonOrNull] but throws [RuntimeException] in case of any problems instead of
- * returning `null` isa.
- *
- * @throws RuntimeException in case of any error occurred during conversion process isa.
+ * - Same as [fromJson] but returns `null` instead of throwing an exception isa.
  *
  * @see fromJson
- * @see toJsonOrNull
- */
-inline fun <reified E> String?.fromJson(gson: Gson? = null): E = fromJsonOrNull(gson)
-    ?: throw RuntimeException("Cannot convert $this to object of type ${E::class}")
-
-/**
- * - Converts `receiver` object to a JSON String OR null in case of any error isa.
- *
- * @param gson in case you want a special configuration for [Gson], Note default value used is [privateGeneratedGson] isa.
- *
- * @see fromJsonOrNull
  * @see toJson
- */
-inline fun <reified E> E?.toJsonOrNull(gson: Gson? = null): String? = this?.run {
-    val usedGson = gson?.addTypeAdapters() ?: privateGeneratedGson
-
-    try { object : GsonConverter<E>(usedGson){}.toJsonOrNull(this) } catch (e: Exception) { null }
-}
-
-/**
- * - Same as [toJsonOrNull] but throws [RuntimeException] in case of any problems instead of
- * returning `null` isa.
- *
- * @throws RuntimeException in case of any error occurred during conversion process isa.
- *
  * @see toJsonOrNull
- * @see fromJson
  */
-inline fun <reified E> E?.toJson(gson: Gson? = null): String = toJsonOrNull(gson)
-    ?: throw RuntimeException("Cannot convert $this to JSON String")
+inline fun <reified E> String?.fromJsonOrNull(gson: Gson? = null): E? = runCatching {
+    fromJson<E>(gson)
+}.getOrNull()
 
 // ---- Internal fun isa.
 
+/**
+ * - List of all annotated classes by the developer using this library's annotation & processor isa.
+ */
 @Suppress("UNCHECKED_CAST")
 internal val allAnnotatedClasses: List<Class<*>> by lazy {
     runCatching {
@@ -140,32 +110,86 @@ internal val allAnnotatedClasses: List<Class<*>> by lazy {
  */
 @PublishedApi
 internal val privateGeneratedGson: Gson by lazy {
-    val gsonBuilder = GsonBuilder()
-
-    gsonBuilder.addTypeAdapters()
-
-    gsonBuilder
-        .serializeNulls()
-        .setLenient()
-        .enableComplexMapKeySerialization()
-        .create()
+    getLibLikeGeneratedGson()
 }
 
 @PublishedApi
-internal fun Gson.addTypeAdapters(): Gson {
-    return newBuilder().apply {
-        addTypeAdapters()
-    }.create()
+internal fun getLibLikeGeneratedGson(
+    vararg excludedClassesForTypeAdapters: Class<*>,
+    excludedTypesForTypeAdapters: List<Type> = emptyList(),
+    excludeSuperclassesOfGivenClasses: Boolean = true
+): Gson {
+    val gsonBuilder = GsonBuilder()
+
+    val converters = gsonBuilder.addTypeAdapters(
+        excludedClassesForTypeAdapters.toList(),
+        excludedTypesForTypeAdapters,
+        excludeSuperclassesOfGivenClasses
+    )
+
+    return gsonBuilder
+        .also {
+            if (MAGson.useDefaultGsonBuilderConfigs) {
+                it.serializeNulls()
+                it.setLenient()
+                it.enableComplexMapKeySerialization()
+
+                /* -> Leave normal configs
+                it.setFieldNamingStrategy { field ->
+                    "${field.type.name}\$${field.name}"
+                }
+                */
+            }
+
+            MAGson.gsonBuilderConfigs(it)
+        }.create()
+        .setUsedGsonInConverters(converters)
+}
+
+/**
+ * @return JSON key to be used for given [field] by using [Gson.fieldNamingStrategy] and if `null`
+ * we use [Field.getName] instead isa.
+ */
+internal fun Gson.getJsonKey(field: Field): String {
+    return fieldNamingStrategy().translateName(field) ?: field.name
 }
 
 // ---- Private fun isa.
 
-private fun GsonBuilder.addTypeAdapters() {
+private fun Gson.setUsedGsonInConverters(converters: List<Pair<MAJsonSerializer, MAJsonDeserializer>>): Gson {
+    return also {
+        for ((serializer, deserializer) in converters) {
+            serializer.usedGson = it
+            deserializer.usedGson = it
+        }
+    }
+}
+
+private fun GsonBuilder.addTypeAdapters(
+    excludedClassesForTypeAdapters: List<Class<*>> = emptyList(),
+    excludedTypesForTypeAdapters: List<Type> = emptyList(),
+    excludeSuperclassesOfGivenClasses: Boolean = true
+): List<Pair<MAJsonSerializer, MAJsonDeserializer>> {
     // Register special classes isa.
     registerTypeAdapter(Uri::class.java, UriTypeAdapter())
 
-    allAnnotatedClasses.forEach {
-        registerTypeAdapter(it, MAJsonSerializer())
-        registerTypeAdapter(it, MAJsonDeserializer())
+    val types = if (excludeSuperclassesOfGivenClasses) {
+        val newAllAnnotatedClasses = allAnnotatedClasses.filterNot { annotatedClass ->
+            excludedClassesForTypeAdapters.any { annotatedClass.isAssignableFrom(it) }
+        }
+
+        newAllAnnotatedClasses - excludedTypesForTypeAdapters
+    }else {
+        allAnnotatedClasses - excludedClassesForTypeAdapters - excludedTypesForTypeAdapters
+    }
+
+    return types.map {
+        val serializer = MAJsonSerializer()
+        val deserializer = MAJsonDeserializer()
+
+        registerTypeAdapter(it, serializer)
+        registerTypeAdapter(it, deserializer)
+
+        serializer to deserializer
     }
 }

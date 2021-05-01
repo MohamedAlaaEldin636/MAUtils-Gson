@@ -13,29 +13,13 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-@file:Suppress("unused")
+package com.maproductions.mohamedalaa.sample.app.del_later
 
-package com.maproductions.mohamedalaa.core
+object Ex1 {
 
-import com.google.gson.Gson
-
-object MAUtilsGsonCore {
-
-    /**
-     * - Default [Gson] object used for serialization/deserialization, the generated object is created by below code isa.
-     * ```
-     * GsonBuilder()
-     *      .serializeNulls()
-     *      .setLenient()
-     *      .enableComplexMapKeySerialization()
-     *      .create()
-     * ```
-     *
-     * @return default [Gson] used by the library when you use [toJson] with no args isa.
-     */
     @JvmStatic
-    fun getLibUsedGson(): Gson {
-        return privateGeneratedGson
+    fun main(args: Array<String>) {
+        println("a")
     }
 
 }

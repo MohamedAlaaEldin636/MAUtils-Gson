@@ -21,13 +21,9 @@ import com.maproductions.mohamedalaa.annotation.MAProviderOfSealedAbstractOrInte
 import com.maproductions.mohamedalaa.sample.core.DataResult
 import com.maproductions.mohamedalaa.sample.core.UICountry
 
-//@MASealedAbstractOrInterface // Can be used, but not needed in the example.
-@MAProviderOfSealedAbstractOrInterface(
-    DataResult::class,
-    UICountry::class,
-    //String::class,
-    //java.lang.String::class,
-    //DataResult.Error::class, // Not needed at all.
+@MAProviderOfSealedAbstractOrInterface
+data class _ProviderOfSealedAbstractOrInterface(
+    var dataResult: DataResult<*>,
+    var uiCountry: UICountry,
 )
-interface _ProviderOfSealedAbstractOrInterface
 

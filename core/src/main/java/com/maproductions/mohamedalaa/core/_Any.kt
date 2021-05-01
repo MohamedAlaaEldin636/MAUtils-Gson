@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
+@file:Suppress("unused")
+
 package com.maproductions.mohamedalaa.core
 
 import com.google.gson.Gson
@@ -26,46 +28,54 @@ internal fun Any.getClassDeclaredFieldsAndSuperclassesDeclaredFields(): List<Fie
     return javaClass.declaredFieldsForSuperclassesOnly(javaClass.declaredFields.filterNotNull())
 }
 
-internal fun Any?.toJsonOrNullWithFullTypeInfo(genericType: Type, gson: Gson? = null): String? = this?.run {
-    val usedGson = gson?.addTypeAdapters() ?: privateGeneratedGson
+internal fun Any?.toJsonWithFullTypeInfo(genericType: Type, gson: Gson? = null): String = this?.run {
+    val usedGson = gson ?: privateGeneratedGson
 
-    try { object : GsonConverterWithFullTypeInfo(genericType, usedGson){}.toJsonOrNull(this) } catch (e: Exception) { null }
-}
+    object : GsonConverterWithFullTypeInfo(genericType, usedGson){}.toJson(this)
+} ?: throw RuntimeException("Can't convert `null` to JSON String")
 
-internal fun String?.fromJsonOrNullWithFullTypeInfo(genericType: Type?, gson: Gson? = null): Any? = this?.run {
+internal fun Any?.toJsonOrNullWithFullTypeInfo(genericType: Type, gson: Gson? = null): String? = runCatching {
+    toJsonWithFullTypeInfo(genericType, gson)
+}.getOrNull()
+
+internal fun String?.fromJsonWithFullTypeInfo(genericType: Type?, gson: Gson? = null): Any = this?.run {
     if (genericType == null) {
-        return@run null
+        throw RuntimeException("Can't convert [$this] to `null` genericType`")
     }
 
-    val usedGson = gson?.addTypeAdapters() ?: privateGeneratedGson
+    val usedGson = gson ?: privateGeneratedGson
 
-    try { object : GsonConverterWithFullTypeInfo(genericType, usedGson){}.fromJsonOrNull(this) as Any? } catch (e: Exception) { null }
-}
+    object : GsonConverterWithFullTypeInfo(genericType, usedGson){}.fromJson(this) as Any
+} ?: throw RuntimeException("Can't convert `null` to a non-null object")
 
-internal abstract class GsonConverterWithFullTypeInfo(
+internal fun String?.fromJsonOrNullWithFullTypeInfo(genericType: Type?, gson: Gson? = null): Any? = runCatching {
+    fromJsonWithFullTypeInfo(genericType, gson)
+}.getOrNull()
+
+private abstract class GsonConverterWithFullTypeInfo(
     private val genericType: Type,
     private val gson: Gson? = null
 ) {
 
-    fun <E> toJsonOrNull(element: E?): String? {
+    fun <E> toJson(element: E?): String = element?.run {
         val type = GsonConverter.canonicalizeOrNull(genericType) ?: `$Gson$Types`.canonicalize(genericType)
 
-        val usedGson = gson?.addTypeAdapters() ?: privateGeneratedGson
+        val usedGson = gson ?: privateGeneratedGson
 
-        return try { usedGson.toJson(element, type) } catch (e: Exception) { null }
-    }
+        usedGson.toJson(this, type)
+    } ?: throw RuntimeException("Can't convert `null` to JSON String")
 
-    fun <E> fromJsonOrNull(json: String?): E? {
+    fun <E> fromJson(json: String?): E = json?.run {
         val type = GsonConverter.canonicalizeOrNull(genericType) ?: `$Gson$Types`.canonicalize(genericType)
 
         (type as? Class<*>)?.kotlin?.objectInstance?.apply {
             @Suppress("UNCHECKED_CAST")
-            return this as E?
+            return this as E
         }
 
-        val usedGson = gson?.addTypeAdapters() ?: privateGeneratedGson
+        val usedGson = gson ?: privateGeneratedGson
 
-        return try { usedGson.fromJson(json, type) } catch (e: Exception) { null }
-    }
+        usedGson.fromJson(json, type)
+    } ?: throw RuntimeException("Can't convert `null` to a non-null object")
 
 }

@@ -38,6 +38,8 @@ object Deps {
 
     const val kotlin_poet = "com.squareup:kotlinpoet:${Versions.kotlin_poet}"
 
+    const val colored_console = "com.github.MohamedAlaaEldin636:Colored-Console:${Versions.colored_console}"
+
     // ---- Testing ---- //
 
     const val junit = "junit:junit:${Versions.test_junit}"
@@ -103,11 +105,20 @@ object Deps {
             val junit = lib("junit", Versions.test_androidx_junit)
             val espresso = Espresso()
 
+            val ext = Ext()
+
             inner class Espresso : BaseGroup() {
                 override val name: String
                     get() = "${this@Test.name}.espresso"
 
                 val core = lib("espresso-core", Versions.test_androidx_espresso)
+            }
+
+            inner class Ext : BaseGroup() {
+                override val name: String
+                    get() = "${this@Test.name}.ext"
+
+                val junit = lib("junit", "1.1.2")
             }
 
         }

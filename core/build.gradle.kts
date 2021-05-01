@@ -78,6 +78,8 @@ dependencies {
 
     api(Deps.gson)
 
+    debugApi(Deps.colored_console)
+
     // -- Unit Testing -- //
 
     testImplementation(Deps.junit)
@@ -86,7 +88,11 @@ dependencies {
 
     testImplementation(Deps.androidx.test.core)
 
+    testImplementation(Deps.androidx.test.ext.junit)
+
     testImplementation(Deps.robolectric)
+
+    testImplementation(Deps.colored_console)
 
     // -- Instrumental Testing -- //
 

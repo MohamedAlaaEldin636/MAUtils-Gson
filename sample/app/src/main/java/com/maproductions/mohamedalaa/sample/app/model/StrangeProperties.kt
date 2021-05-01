@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.maproductions.mohamedalaa.sample.app
+package com.maproductions.mohamedalaa.sample.app.model
 
-import com.maproductions.mohamedalaa.annotation.MAProviderOfSealedAbstractOrInterface
-import com.maproductions.mohamedalaa.sample.core.normal_gson_same_field_name.AnnDC2
+class StrangeProperties<T> {
 
-@MAProviderOfSealedAbstractOrInterface
-class Mido {
+    var v1: T? = 8 as? T
 
-    lateinit var string: String
+    var v2: List<String> = listOf("1")
 
-    var int: Int = 0
+    var v3: String = "I am string isa."
 
-    lateinit var annDC2: AnnDC2
-
-    //lateinit var list: List<*> todo what if List<Int> will it only enters my serilizer if is List<Int> isa ?!
-    // also before that check what the processor translates it to ?!?!
+    var v4: List<T?> = listOf(4 as? T)
 
 }
