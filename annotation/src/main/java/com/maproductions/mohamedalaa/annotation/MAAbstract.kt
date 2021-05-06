@@ -41,8 +41,8 @@ package com.maproductions.mohamedalaa.annotation
  * - Don't forget to use the processor of this annotation in the same module
  * this annotation is used in, even if used in several modules (multi-module project) isa.
  *
- * @see MAProviderOfSealedAbstractOrInterface
+ * @see MAProviderOfAbstracts
  */
 @Retention(AnnotationRetention.BINARY)
 @Target(AnnotationTarget.CLASS)
-annotation class MASealedAbstractOrInterface
+annotation class MAAbstract

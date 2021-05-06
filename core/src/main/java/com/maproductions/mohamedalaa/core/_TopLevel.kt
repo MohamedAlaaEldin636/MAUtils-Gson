@@ -15,9 +15,10 @@
 
 package com.maproductions.mohamedalaa.core
 
+import org.objenesis.ObjenesisStd
+
 internal const val KEY_CLASS_FULL_NAME = "KEY_CLASS_FULL_NAME"
-internal const val KEY_NORMAL_SERIALIZATION_JSON_STRING = "KEY_NORMAL_SERIALIZATION_JSON_STRING"
-internal const val KEY_CUSTOM_SERIALIZATION_JSON_STRING = "KEY_CUSTOM_SERIALIZATION_JSON_STRING"
+internal const val KEY_TYPE_FULL_NAME = "KEY_TYPE_FULL_NAME"
 
 internal const val KEY_OBJECT_SERIALIZATION_JSON_STRING = "KEY_OBJECT_SERIALIZATION_JSON_STRING"
 internal const val KEY_ENUM_SERIALIZATION_JSON_STRING = "KEY_ENUM_SERIALIZATION_JSON_STRING"
@@ -26,7 +27,10 @@ internal const val KEY_SUPPORTED_TYPE_SERIALIZATION_JSON_STRING = "KEY_SUPPORTED
 internal const val KEY_CHAR_SERIALIZATION_JSON_STRING = "KEY_CHAR_SERIALIZATION_JSON_STRING"
 internal const val KEY_BYTE_SERIALIZATION_JSON_STRING = "KEY_BYTE_SERIALIZATION_JSON_STRING"
 internal const val KEY_SHORT_SERIALIZATION_JSON_STRING = "KEY_SHORT_SERIALIZATION_JSON_STRING"
-//internal const val KEY_SUPPORTED_TYPE_SERIALIZATION_JSON_STRING = ""
+internal const val KEY_TYPE_JSON_STRING = "KEY_TYPE_JSON_STRING"
+internal const val KEY_NORMAL_SERIALIZATION_JSON_OBJECT_JSON_STRING = "KEY_NORMAL_SERIALIZATION_JSON_OBJECT_JSON_STRING"
+internal const val KEY_NORMAL_SERIALIZATION_JSON_ARRAY_JSON_STRING = "KEY_NORMAL_SERIALIZATION_JSON_ARRAY_JSON_STRING"
+internal const val KEY_CUSTOM_SERIALIZATION_JSON_STRING = "KEY_CUSTOM_SERIALIZATION_JSON_STRING"
 
 internal inline fun <T> T.runSafely(block: T.() -> Unit) {
     try {
@@ -34,4 +38,15 @@ internal inline fun <T> T.runSafely(block: T.() -> Unit) {
     }catch (e: Throwable) {
         // ignore
     }
+}
+
+/**
+ * - If [condition] is `false` an exception will be thrown isa.
+ */
+fun checkTrue(condition: Boolean) {
+    if (condition.not()) throw RuntimeException("False condition")
+}
+
+internal val objenesis by lazy {
+    ObjenesisStd(true)
 }

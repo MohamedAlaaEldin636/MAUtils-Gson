@@ -22,7 +22,7 @@ import java.lang.reflect.Type
 
 inline fun <reified E> E?.getFullTypeInfo(): Type = this?.run {
     object : FullTypeInfo<E>(){}.type
-} ?: throw RuntimeException("Can't convert `null` to JSON String")
+} ?: throw RuntimeException("Can't get type of `null`")
 
 abstract class FullTypeInfo<E> {
 

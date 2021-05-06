@@ -15,30 +15,135 @@
 
 package com.maproductions.mohamedalaa.processor.extensions
 
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.STAR
-import com.squareup.kotlinpoet.asTypeName
+import com.maproductions.mohamedalaa.processor.ProcessorOfFullNames
+import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 
-fun buildFunSpec(classesFullNames: List<String>): FunSpec {
+@KotlinPoetMetadataPreview
+fun buildPropertySpecList(classesFullNames: List<String>): PropertySpec {
     val itemType = KotlinpoetUtils.parameterizedTypeName(
         Class::class.asTypeName(),
         STAR,
     )
 
-    val returnType = KotlinpoetUtils.parameterizedTypeName(
+    val type = KotlinpoetUtils.parameterizedTypeName(
         List::class.asTypeName(),
         itemType,
     )
 
-    val builder = FunSpec.builder("getListOfClasses").apply {
-        // Return Type isa.
-        returns(returnType)
+    val builder = PropertySpec.builder(ProcessorOfFullNames.propertyName, type).apply {
+        // docs
+        addKdoc(
+            "- All classes targeted by the annotations isa." +
+                    "\n\n" +
+                    "- Shouldn't be used except by the library it's created in as there is no use of it outside that scope isa."
+        )
+
+        // Annotation
+        addAnnotation(JvmField::class)
 
         // Code isa.
-        addStatement(
-            "return listOf(${classesFullNames.joinToString { "$it::class.java" }})"
+        initializer(
+            "listOf(${classesFullNames.joinToString { "$it::class.java" }})"
         )
     }
 
     return builder.build()
+}
+
+/**
+ * @param fileSpecBuilder Needed to add import statements in it isa.
+ */
+@KotlinPoetMetadataPreview
+fun buildFunctionSpecSetup(fileSpecBuilder: FileSpec.Builder, classesFullNames: List<String>): FunSpec {
+    fileSpecBuilder.addImport("com.google.gson", "Gson", "GsonBuilder")
+    fileSpecBuilder.addImport("com.maproductions.mohamedalaa.core", "\$MA\$Gson")
+
+    val paramUseDefaultGsonBuilderConfigs = ParameterSpec.builder("useDefaultGsonBuilderConfigs", Boolean::class)
+        .defaultValue("true")
+        .build()
+
+    val typeOfParamGsonBuilderConfigs = LambdaTypeName.get(
+        null,
+        ClassName("com.google.gson", "GsonBuilder"),
+        returnType = Unit::class.asTypeName()
+    )
+
+    val paramGsonBuilderConfigs = ParameterSpec.builder("gsonBuilderConfigs", typeOfParamGsonBuilderConfigs)
+        .defaultValue("{}")
+        .build()
+
+    val builder = FunSpec.builder("setup").apply {
+        // region docs
+        addKdoc(
+            "- **Must** be called on Application.onCreate to set up the library.\n" +
+                    "\n" +
+                    "- Not only sets up the library, But also provides customizations to the default used [Gson].\n" +
+                    "\n" +
+                    "@param useDefaultGsonBuilderConfigs if `true` then default [Gson] instance that will be used\n" +
+                    "(which can be retrieved by [getLibUsedGson]) will have the following code\n" +
+                    "```\n" +
+                    "GsonBuilder()\n" +
+                    "     .serializeNulls()\n" +
+                    "     .setLenient()\n" +
+                    "     .enableComplexMapKeySerialization()\n" +
+                    "```\n" +
+                    "Otherwise just ```GsonBuilder()``` is used.\n" +
+                    "\n" +
+                    "@param gsonBuilderConfigs in case you wanna make more customizations like\n" +
+                    "[GsonBuilder.setFieldNamingStrategy] or any other customization to [GsonBuilder] isa."
+        )
+        // endregion
+
+        // Annotations
+        addAnnotation(JvmStatic::class)
+        addAnnotation(JvmOverloads::class)
+
+        // Parameters
+        addParameter(paramUseDefaultGsonBuilderConfigs)
+        addParameter(paramGsonBuilderConfigs)
+
+        // Code isa.
+        addStatement(
+            "`\$MA\$Gson`.useDefaultGsonBuilderConfigs = useDefaultGsonBuilderConfigs" +
+                    "\n" +
+                    "`\$MA\$Gson`.gsonBuilderConfigs = gsonBuilderConfigs" +
+                    "\n" +
+                    "`\$MA\$Gson`.allAnnotatedClasses = listOf(${classesFullNames.joinToString { "$it::class.java" }})"
+        )
+    }
+
+    return builder.build()
+}
+
+fun buildFunctionSpecGetLibUsedGson(fileSpecBuilder: FileSpec.Builder): FunSpec {
+    fileSpecBuilder.addImport("com.google.gson", "Gson")
+    fileSpecBuilder.addImport("com.maproductions.mohamedalaa.core", "toJson", "\$MA\$Gson")
+
+    val builder = FunSpec.builder("getLibUsedGson").apply {
+        // region docs
+        addKdoc(
+            "@return default [Gson] used by the library when you use [toJson] with no args isa."
+        )
+        // endregion
+
+        // Annotations
+        addAnnotation(JvmStatic::class)
+
+        // Return Type
+        returns(ClassName("com.google.gson", "Gson"))
+
+        // Code
+        addStatement("return `\$MA\$Gson`.getLibUsedGson()")
+    }
+
+    return builder.build()
+}
+
+fun FileSpec.Builder.addSuppressUnusedAnnotation() = apply {
+    addAnnotation(
+        AnnotationSpec.builder(Suppress::class)
+            .addMember("\"unused\"")
+            .build()
+    )
 }

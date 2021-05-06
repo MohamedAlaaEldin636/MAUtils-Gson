@@ -17,11 +17,11 @@
 
 package com.maproductions.mohamedalaa.sample.app.extensions
 
-import com.maproductions.mohamedalaa.annotation.MAProviderOfSealedAbstractOrInterface
+import com.maproductions.mohamedalaa.annotation.MAProviderOfAbstracts
 import com.maproductions.mohamedalaa.sample.core.DataResult
 import com.maproductions.mohamedalaa.sample.core.UICountry
 
-@MAProviderOfSealedAbstractOrInterface
+@MAProviderOfAbstracts
 data class _ProviderOfSealedAbstractOrInterface(
     var dataResult: DataResult<*>,
     var uiCountry: UICountry,

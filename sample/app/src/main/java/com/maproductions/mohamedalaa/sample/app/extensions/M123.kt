@@ -15,9 +15,9 @@
 
 package com.maproductions.mohamedalaa.sample.app.extensions
 
-import com.maproductions.mohamedalaa.annotation.MASealedAbstractOrInterface
+import com.maproductions.mohamedalaa.annotation.MAAbstract
 
-@MASealedAbstractOrInterface
+@MAAbstract
 sealed class M123 {
 
     object C1 : M123()

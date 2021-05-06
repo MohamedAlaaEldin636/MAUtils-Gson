@@ -70,6 +70,8 @@ android {
 
 dependencies {
     // Can be excluded if processor won't be used.
+    api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+
     api(project(Deps.own_libs.annotation))
 
     api(Deps.kotlin.stdlib_jdk8)
@@ -79,6 +81,8 @@ dependencies {
     api(Deps.gson)
 
     debugApi(Deps.colored_console)
+
+    //api("de.ruedigermoeller:fst:2.48-jdk-6")
 
     // -- Unit Testing -- //
 

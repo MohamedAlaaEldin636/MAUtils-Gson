@@ -17,15 +17,12 @@ package com.maproductions.mohamedalaa.core
 
 import org.json.JSONObject
 
-/**
- * - Uses [JSONObject.put] but throws exception if [key] already exists isa.
- */
-fun JSONObject.putOrThrow(key: String, value: Any?) {
-    if (has(key)) {
-        throw IllegalArgumentException("Same key for mapping used key ==> $key")
+fun JSONObject.optAny(vararg keys: String): Any? {
+    for (key in keys) {
+        opt(key)?.also {
+            return it
+        }
     }
 
-    put(key, value)
+    return null
 }
-
-//fun JSONObject.get

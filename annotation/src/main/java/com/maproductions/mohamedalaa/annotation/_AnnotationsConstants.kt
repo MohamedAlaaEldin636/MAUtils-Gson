@@ -23,7 +23,7 @@ object _AnnotationsConstants {
 
     private const val prefixOfAllAnnotations = "_Generated"
 
-    val maSealedAbstractOrInterfaceJClass = MASealedAbstractOrInterface::class.java
+    val maSealedAbstractOrInterfaceJClass = MAAbstract::class.java
 
     val generatedMASealedAbstractOrInterfacePackageName: String
             = maSealedAbstractOrInterfaceJClass.getPackage().name

@@ -24,7 +24,7 @@ internal fun Class<*>.declaredFieldsForSuperclassesOnly(initialList: List<Field>
     return superclass.declaredFieldsForSuperclassesOnly(initialList + list)
 }
 
-internal fun Class<*>.getDeclaredFieldForSelfAndSuperclassesOnly(name: String): Field? {
+internal fun Class<*>.getDeclaredFieldByNameSearchingSelfAndSuperclasses(name: String): Field? {
     val allFields = declaredFieldsForSuperclassesOnly(declaredFields.filterNotNull())
     return allFields.firstOrNull {
         it.name == name
@@ -32,7 +32,7 @@ internal fun Class<*>.getDeclaredFieldForSelfAndSuperclassesOnly(name: String): 
 }
 
 @Suppress("unused")
-internal fun Class<*>.getDeclaredFieldForSuperclassesOnly(name: String): Field? {
+internal fun Class<*>.getDeclaredFieldByNameSearchingSuperclassesOnly(name: String): Field? {
     val allFields = declaredFieldsForSuperclassesOnly()
     return allFields.firstOrNull {
         it.name == name

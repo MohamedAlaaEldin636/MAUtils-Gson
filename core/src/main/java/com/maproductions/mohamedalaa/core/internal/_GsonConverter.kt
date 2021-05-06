@@ -21,6 +21,11 @@ import com.maproductions.mohamedalaa.core.java.GsonConverter
 import java.io.Serializable
 import java.lang.reflect.*
 
+// todo Type.eliminateWildcards bs kda isa. -> in MATypes not here isa,
+// +
+// check if asln needed, cuz as i remember it was needed as ? super and ? extends
+// would make error on gson serialization and deserialization so recheck it isa.
+
 /**
  * - Eliminates any wildcard to it's first upper or lower bound isa.
  */
@@ -43,6 +48,7 @@ internal fun GsonConverter.Companion.canonicalize(type: Type): Type {
         is GenericArrayType -> GenericArrayTypeImpl(
             type.genericComponentType
         )
+        // todo why not Impl isa?!
         is WildcardType -> type.convertToTypeOrNull()!!/*WildcardTypeImpl(type.upperBounds, type.lowerBounds)*/
         else -> type
     }

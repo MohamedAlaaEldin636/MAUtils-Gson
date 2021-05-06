@@ -15,30 +15,29 @@
 
 package com.maproductions.mohamedalaa.processor
 
-import com.maproductions.mohamedalaa.annotation.MAProviderOfSealedAbstractOrInterface
-import com.maproductions.mohamedalaa.annotation.MASealedAbstractOrInterface
-import com.maproductions.mohamedalaa.annotation._AnnotationsConstants
+import com.maproductions.mohamedalaa.annotation.MAProviderOfAbstracts
+import com.maproductions.mohamedalaa.annotation.MAAbstract
 import com.maproductions.mohamedalaa.processor.custom_classes.SpecialAbstractProcessor
 import com.maproductions.mohamedalaa.processor.extensions.*
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import com.squareup.kotlinpoet.metadata.toImmutableKmClass
 import kotlinx.metadata.KmClassifier
-import java.io.File
-import java.io.FileWriter
+import org.reflections.Reflections
+import org.reflections.scanners.SubTypesScanner
 import java.io.IOException
-import java.io.PrintWriter
-import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedAnnotationTypes
 import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
 
+
 /**
  * - Creates a single fun in an object in a file that returns a [List] of the full names of all
- * annotated types by [MASealedAbstractOrInterface] and all classes declared as params in
- * all [MAProviderOfSealedAbstractOrInterface] annotations isa.
+ * annotated types by [MAAbstract] and all classes declared as params in
+ * all [MAProviderOfAbstracts] annotations isa.
  *
  * ## Steps
  *
@@ -80,23 +79,86 @@ import javax.lang.model.element.TypeElement
  */
 @KotlinPoetMetadataPreview
 @SupportedAnnotationTypes(
-    "com.maproductions.mohamedalaa.annotation.MASealedAbstractOrInterface",
-    "com.maproductions.mohamedalaa.annotation.MAProviderOfSealedAbstractOrInterface",
+    "com.maproductions.mohamedalaa.annotation.MAAbstract",
+    "com.maproductions.mohamedalaa.annotation.MAProviderOfAbstracts",
 )
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 class ProcessorOfFullNames : SpecialAbstractProcessor() {
 
     // todo finish all above steps isa, deletions and 2 types isa.
 
+    /*
+    since limitation will need 2 things annotate app module application class
+    +
+    call on create setup
+
+    todo then generated _ classes have just list and MAGson doesn't have it and it is inside setup isa.
+     */
+
+    companion object {
+        private const val generatedClassSimpleName = "MAGson"
+
+        const val propertyName = "list"
+    }
+
     private val specialClasses = listOf(
         "android.net.Uri"
     )
 
-    override fun processAnnotation(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
-        var fullNamesList = roundEnv.getElementsAnnotatedWith(MASealedAbstractOrInterface::class.java)
+    private val generatedClassPackageName by lazy {
+        MAAbstract::class.java.`package`.name + ".generated_as_internal_helper_package"
+    }
+
+    override fun processAnnotation(
+        annotations: MutableSet<out TypeElement>,
+        roundEnv: RoundEnvironment
+    ): Boolean {
+        // todo then if _GonConverter can be replaced by MATypes if not due to ? super wildcard to normal
+        // then make in MATypes wildcard.eliminateWildcards isa. and check if works isa and del _GsonConverter
+        // to remove duplicate code isa.
+
+        /*
+        Cases
+
+        todo for sake of all cases
+        1,2 app -> SUCCESS el7
+        1,2 3 app
+        1 2,3 app
+        1 2 3 app but no annotations in 2 kda isa.
+        1 2 app
+        where , means app depends on both and both depend on not each other isa.
+
+        todo then after processor is 100% isa, correct then adjust _Gson to make allANnotat... val
+        be removed and use the one in $MA$Gson which will be planted and in tests since App not called
+        nta b nafsak call MAGson.setup isa.
+         */
+        val classes = kotlin.runCatching {
+            val reflections = Reflections(
+                generatedClassPackageName,
+                SubTypesScanner(false),
+            )
+
+            reflections.getSubTypesOf(Any::class.java)
+        }.getOrNull().orEmpty()
+
+        var fullNamesList = emptyList<String>()
+        fullNamesList = fullNamesList + kotlin.runCatching {
+            classes.mapNotNull { clazz ->
+                val field = clazz.fields.firstOrNull { it.name == propertyName }
+                    ?: return@mapNotNull null
+                field.isAccessible = true
+                @Suppress("UNCHECKED_CAST")
+                val list = field.get(null) as List<Class<*>>
+                list.mapNotNull {
+                    if (it.isPrimitive) it.kotlin.javaObjectType.kotlin.qualifiedName else it.name
+                }
+            }.flatten()
+        }.getOrNull().orEmpty()
+
+        fullNamesList = fullNamesList + roundEnv.getElementsAnnotatedWith(MAAbstract::class.java)
             .filterIsInstance<TypeElement>().map { it.toImmutableKmClass().name.replaceForwardSlashWithDot() }
 
-        for (element in roundEnv.getElementsAnnotatedWith(MAProviderOfSealedAbstractOrInterface::class.java).filterIsInstance<TypeElement>()) {
+        for (element in roundEnv.getElementsAnnotatedWith(MAProviderOfAbstracts::class.java).filterIsInstance<TypeElement>()) {
             fullNamesList = fullNamesList + element.toImmutableKmClass().properties.mapNotNull {
                 (it.returnType.classifier as? KmClassifier.Class)?.name?.replaceForwardSlashWithDot()
             }
@@ -109,33 +171,45 @@ class ProcessorOfFullNames : SpecialAbstractProcessor() {
         // Exclude special classes isa.
         fullNamesList = fullNamesList - specialClasses
 
-        // function
-        val function = buildFunSpec(fullNamesList.distinct())
+        // File Builder & Property & Functions
+        val helperClassSimpleName = "_${System.nanoTime()}"
+        val publicClassSimpleName = generatedClassSimpleName
 
-        // object
-        val objectClass = TypeSpec.objectBuilder(_AnnotationsConstants.generatedMASealedAbstractOrInterfaceSimpleName)
-            .addFunction(function)
-            .build()
+        val helperClassFileSpecBuilder = FileSpec.builder(generatedClassPackageName, helperClassSimpleName)
+        val publicClassFileSpecBuilder = FileSpec.builder(generatedClassPackageName, publicClassSimpleName)
 
-        // file
-        val file = FileSpec.builder(
-            _AnnotationsConstants.generatedMASealedAbstractOrInterfacePackageName,
-            _AnnotationsConstants.generatedMASealedAbstractOrInterfaceSimpleName
-        ).run {
-            addAnnotation(
-                AnnotationSpec.builder(Suppress::class)
-                    .addMember("\"unused\"")
-                    .build()
-            )
+        val propertySpecList = buildPropertySpecList(fullNamesList.distinct())
+        val functionSpecSetup = buildFunctionSpecSetup(helperClassFileSpecBuilder, fullNamesList.distinct())
+        val functionSpecGetLibUsedGson = buildFunctionSpecGetLibUsedGson(helperClassFileSpecBuilder)
 
-            addType(objectClass)
-
-            build()
+        for (import in helperClassFileSpecBuilder.imports) {
+            publicClassFileSpecBuilder.addImport(import)
         }
 
+        // objects
+        val helperClassObjectClass = TypeSpec.objectBuilder(helperClassSimpleName).apply {
+            addProperty(propertySpecList)
+        }.build()
+        val publicClassObjectClass = TypeSpec.objectBuilder(publicClassSimpleName).apply {
+            addFunction(functionSpecSetup)
+
+            addFunction(functionSpecGetLibUsedGson)
+        }.build()
+
+        // files
+        val helperClassFile = helperClassFileSpecBuilder
+            .addSuppressUnusedAnnotation()
+            .addType(helperClassObjectClass)
+            .build()
+        val publicClassFile = publicClassFileSpecBuilder
+            .addSuppressUnusedAnnotation()
+            .addType(publicClassObjectClass)
+            .build()
+
         try {
-            file.writeTo(processingEnv.filer)
-        } catch (e: IOException) {
+            helperClassFile.writeTo(processingEnv.filer)
+            publicClassFile.writeTo(processingEnv.filer)
+        }catch (e: IOException) {
             e.printStackTrace()
         }
 
@@ -144,8 +218,8 @@ class ProcessorOfFullNames : SpecialAbstractProcessor() {
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
         return mutableSetOf(
-            "com.maproductions.mohamedalaa.annotation.MASealedAbstractOrInterface",
-            "com.maproductions.mohamedalaa.annotation.MAProviderOfSealedAbstractOrInterface",
+            "com.maproductions.mohamedalaa.annotation.MAAbstract",
+            "com.maproductions.mohamedalaa.annotation.MAProviderOfAbstracts",
         )
     }
 

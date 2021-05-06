@@ -16,23 +16,23 @@
 package com.maproductions.mohamedalaa.annotation
 
 /**
- * - Has same effect as [MASealedAbstractOrInterface], **But** used with classes that you don't own,
- * Which means you can't annotate them with [MASealedAbstractOrInterface], so when you use other
+ * - Has same effect as [MAAbstract], **But** used with classes that you don't own,
+ * Which means you can't annotate them with [MAAbstract], so when you use other
  * 3rd party library or even another library module in the same project add the needed classes in
- * this annotation isa, instead of [MASealedAbstractOrInterface] since you don't own them isa.
+ * this annotation isa, instead of [MAAbstract] since you don't own them isa.
  *
  * - Note annotated class with this annotation will be ignored, yet it will be accessed so after
  * compilation the unused lint warning won't appear isa, However you still can annotate it
- * with [MASealedAbstractOrInterface] in case you want it to be annotated with it isa.
+ * with [MAAbstract] in case you want it to be annotated with it isa.
  *
  * ## How to Use
  *
  * 1. Create a data class or any class with properties of classes that you want them to be specially
  * converted to json (i.e. abstract classes), if any of the classes has type param(s) just use '*'
- * which is any class isa.
+ * which is any class isa. todo what if i donot want * and specific type param is it possible isa ?!
  *
  * 2. Annotate that data class with this annotation isa.
  */
 @Retention(AnnotationRetention.BINARY)
 @Target(AnnotationTarget.CLASS)
-annotation class MAProviderOfSealedAbstractOrInterface
+annotation class MAProviderOfAbstracts

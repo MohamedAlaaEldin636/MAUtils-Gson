@@ -42,6 +42,8 @@ android {
 
         testInstrumentationRunner = Const.test_instrumentation_runner
         consumerProguardFiles(Const.consumer_proguard_files)
+
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -76,6 +78,7 @@ android {
 
 dependencies {
     api(project(Deps.own_libs.sample.core))
+    api(project(Deps.own_libs.sample.core2))
 
     kapt(project(Deps.own_libs.processor))
 

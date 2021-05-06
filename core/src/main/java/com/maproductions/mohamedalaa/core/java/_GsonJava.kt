@@ -41,7 +41,7 @@ import java.lang.reflect.Type
  */
 @JvmOverloads
 @JvmName("toJson")
-fun <E> E?.toJsonJava(elementClass: Class<E>? = null, gson: Gson? = null): String = this?.run {
+fun <E> E?.toJsonJava(elementClass: Class<*>? = null, gson: Gson? = null): String = this?.run {
     val usedGson = gson ?: privateGeneratedGson
 
     if (elementClass == null) {
@@ -60,7 +60,7 @@ fun <E> E?.toJsonJava(elementClass: Class<E>? = null, gson: Gson? = null): Strin
  */
 @JvmOverloads
 @JvmName("toJsonOrNull")
-fun <E> E?.toJsonOrNullJava(elementClass: Class<E>? = null, gson: Gson? = null): String? = runCatching {
+fun <E> E?.toJsonOrNullJava(elementClass: Class<*>? = null, gson: Gson? = null): String? = runCatching {
     toJsonJava(elementClass, gson)
 }.getOrNull()
 
@@ -127,7 +127,7 @@ fun <E> String?.fromJsonOrNullJava(elementClass: Class<E>, gson: Gson? = null): 
  * ```
  *
  * @param gson in case you want a special configuration for [Gson], Note default value used is
- * [MAGson.getLibUsedGson] isa.
+ * [`$MA$Gson`.getLibUsedGson] isa.
  *
  * @param E type to convert to/from JSON String.
  */

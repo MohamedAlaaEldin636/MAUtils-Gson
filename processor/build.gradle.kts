@@ -40,6 +40,8 @@ dependencies {
     implementation("com.squareup:kotlinpoet-metadata-specs:1.6.0")
 
     implementation(Deps.kotlinx.metadata)
+
+    implementation("org.reflections:reflections:0.9.12")
 }
 
 java {

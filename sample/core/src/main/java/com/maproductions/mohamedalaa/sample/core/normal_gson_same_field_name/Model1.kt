@@ -15,7 +15,7 @@
 
 package com.maproductions.mohamedalaa.sample.core.normal_gson_same_field_name
 
-import com.maproductions.mohamedalaa.annotation.MASealedAbstractOrInterface
+import com.maproductions.mohamedalaa.annotation.MAAbstract
 
 open class OpenClass1 {
     private val p1: Int = 9
@@ -33,7 +33,7 @@ data class DC1(
 )
 
 // todo fix processor it didn't add below except with @MAProvider isa.
-@MASealedAbstractOrInterface
+@MAAbstract
 data class AnnDC2(
     var string: String
 )
