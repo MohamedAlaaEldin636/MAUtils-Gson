@@ -32,18 +32,10 @@ internal const val KEY_NORMAL_SERIALIZATION_JSON_OBJECT_JSON_STRING = "KEY_NORMA
 internal const val KEY_NORMAL_SERIALIZATION_JSON_ARRAY_JSON_STRING = "KEY_NORMAL_SERIALIZATION_JSON_ARRAY_JSON_STRING"
 internal const val KEY_CUSTOM_SERIALIZATION_JSON_STRING = "KEY_CUSTOM_SERIALIZATION_JSON_STRING"
 
-internal inline fun <T> T.runSafely(block: T.() -> Unit) {
-    try {
-        block()
-    }catch (e: Throwable) {
-        // ignore
-    }
-}
-
 /**
  * - If [condition] is `false` an exception will be thrown isa.
  */
-fun checkTrue(condition: Boolean) {
+internal fun checkTrue(condition: Boolean) {
     if (condition.not()) throw RuntimeException("False condition")
 }
 

@@ -79,9 +79,11 @@ fun <E> E?.toJsonOrNullJava(elementClass: Class<*>? = null, gson: Gson? = null):
 @JvmOverloads
 @JvmName("fromJson")
 fun <E> String?.fromJsonJava(elementClass: Class<E>, gson: Gson? = null): E = this?.run {
-    (elementClass as? Class<*>)?.kotlin?.objectInstance?.apply {
-        @Suppress("UNCHECKED_CAST")
-        return@run this as E?
+    if (`$MA$Gson`.checkObjectDeclarationEvenIfNotAnnotated) {
+        (elementClass as? Class<*>)?.kotlin?.objectInstance?.apply {
+            @Suppress("UNCHECKED_CAST")
+            return@run this as E?
+        }
     }
 
     val usedGson = gson ?: privateGeneratedGson
@@ -153,11 +155,6 @@ abstract class GsonConverter<E>(private val gson: Gson? = null) {
      */
     fun fromJson(json: String): E {
         val type = getSuperclassTypeParameter(javaClass)
-
-        (type as? Class<*>)?.kotlin?.objectInstance?.apply {
-            @Suppress("UNCHECKED_CAST")
-            return this as E
-        }
 
         val usedGson = gson ?: privateGeneratedGson
 

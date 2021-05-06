@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.maproductions.mohamedalaa.core
+package com.maproductions.mohamedalaa.core3
 
-fun <T> List<T>.indexOfFirstOrNull(predicate: (T) -> Boolean): Int? = indexOfFirst(predicate).let {
-    if (it == -1) null else it
+import com.maproductions.mohamedalaa.annotation.MAAbstract
+
+@MAAbstract
+sealed class Core3SealedClass {
+    object O : Core3SealedClass()
 }

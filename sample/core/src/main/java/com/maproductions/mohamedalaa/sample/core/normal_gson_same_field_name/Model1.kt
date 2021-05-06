@@ -33,7 +33,7 @@ data class DC1(
 )
 
 // todo fix processor it didn't add below except with @MAProvider isa.
-@MAAbstract
+//@MAAbstract
 data class AnnDC2(
     var string: String
 )

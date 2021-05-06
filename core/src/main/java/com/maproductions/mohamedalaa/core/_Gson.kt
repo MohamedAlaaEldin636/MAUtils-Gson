@@ -21,10 +21,7 @@ import com.maproductions.mohamedalaa.core.internal.MAJsonDeserializer
 import com.maproductions.mohamedalaa.core.internal.MAJsonSerializer
 import com.maproductions.mohamedalaa.core.java.GsonConverter
 import com.maproductions.mohamedalaa.annotation._AnnotationsConstants
-import com.maproductions.mohamedalaa.coloredconsole.consoleErrorLn
-import com.maproductions.mohamedalaa.coloredconsole.consoleInfoLn
-import com.maproductions.mohamedalaa.coloredconsole.consolePrintLn
-import com.maproductions.mohamedalaa.coloredconsole.consoleWarnLn
+import com.maproductions.mohamedalaa.coloredconsole.*
 import com.maproductions.mohamedalaa.core.internal.UriTypeAdapter
 import java.lang.reflect.Field
 import java.lang.reflect.Type
@@ -41,29 +38,9 @@ import kotlin.system.measureTimeMillis
  * @see fromJsonOrNull
  */
 inline fun <reified E> E?.toJson(gson: Gson? = null): String = this?.run {
-    val usedGson = gson ?: run {
-        consoleWarnLn(measureTimeMillis {
-            privateGeneratedGson
-        })
+    val usedGson = gson ?: privateGeneratedGson
 
-        consoleWarnLn(measureTimeMillis {
-            privateGeneratedGson
-        })
-
-        privateGeneratedGson
-    }
-
-    run {
-        consoleInfoLn(measureTimeMillis {
-            object : GsonConverter<E>(usedGson){}.toJson(this)
-        })
-
-        consoleInfoLn(measureTimeMillis {
-            object : GsonConverter<E>(usedGson){}.toJson(this)
-        })
-
-        object : GsonConverter<E>(usedGson){}.toJson(this)
-    }
+    object : GsonConverter<E>(usedGson){}.toJson(this)
 } ?: throw RuntimeException("Can't convert `null` to JSON String")
 
 /**
@@ -86,9 +63,12 @@ inline fun <reified E> E?.toJsonOrNull(gson: Gson? = null): String? = runCatchin
  * @see toJson
  */
 inline fun <reified E> String?.fromJson(gson: Gson? = null): E = this?.run {
-    E::class.objectInstance?.apply {
-        return@run this
+    if (`$MA$Gson`.checkObjectDeclarationEvenIfNotAnnotated) {
+        E::class.objectInstance?.apply {
+            return@run this
+        }
     }
+
 
     val usedGson = gson ?: privateGeneratedGson
 
@@ -134,16 +114,17 @@ if i make user on app start up call a plant like fun which calls withou reflecti
 fun to get all classes then plants the registered type adapters or plants the classes without reflection
 like timber isa can i do that or not isa ?!???
  */
-@Suppress("UNCHECKED_CAST")
+/*@Suppress("UNCHECKED_CAST")
 internal val allAnnotatedClasses: List<Class<*>> by lazy {
-    runCatching {
+    `$MA$Gson`.allAnnotatedClasses
+    *//*runCatching {
         val kClass = Class.forName(_AnnotationsConstants.generatedMASealedAbstractOrInterfaceFullName).kotlin
 
         val function = kClass.declaredFunctions.first()
 
         function.call(kClass.objectInstance) as List<Class<*>>
-    }.getOrNull() ?: emptyList()
-}
+    }.getOrNull() ?: emptyList()*//*
+}*/
 
 /**
  * - Default [Gson] object used for serialization/deserialization, the generated object is created by below code isa.
@@ -160,7 +141,16 @@ internal val allAnnotatedClasses: List<Class<*>> by lazy {
 //  maybe adjust adding and subtracting lists and arrays maybe di el problem isa.
 @PublishedApi
 internal val privateGeneratedGson: Gson by lazy {
-    getLibLikeGeneratedGson()
+    kotlin.run {
+        val g: Gson
+        measureTimeMillis {
+            g = getLibLikeGeneratedGson()
+        }.also {
+            consoleDebugLn("getLibLikeGeneratedGson $it", stacktraceLimit = 1)
+        }
+
+        g
+    }
 }
 
 @PublishedApi
@@ -172,57 +162,34 @@ internal fun getLibLikeGeneratedGson(
     // 15 ms
     val gsonBuilder = GsonBuilder()
 
-    /*consoleErrorLn(measureTimeMillis {
-        listOf<Int>()
-    })
-    consoleErrorLn(measureTimeMillis {
-        listOf(3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5)
-    })*/
     // 47 so a little too much as well isa. todo make it list directly kda isa. sometimes 31 sometimes 0 if comment above is not comment isa.
-    val list: List<Class<*>>
-    consoleErrorLn(measureTimeMillis {
-        list = excludedClassesForTypeAdapters.toList()
-    })
+    val list = excludedClassesForTypeAdapters.toList()
 
-    consoleErrorLn(measureTimeMillis {
-        allAnnotatedClasses
-    })
-    consoleErrorLn(measureTimeMillis {
-        consolePrintLn(allAnnotatedClasses)
-    })
-
-    // 700 ~ 900 ----- 734 -> 687 (direct list not .toList()) -> 47 if allAnnotatedClasses is already existent isa.
-    val converters: List<Pair<MAJsonSerializer, MAJsonDeserializer>>
-    consoleErrorLn("converters " + measureTimeMillis {
-        converters = gsonBuilder.addTypeAdapters(
-            list,
-            excludedTypesForTypeAdapters,
-            excludeSuperclassesOfGivenClasses
-        )
-    })
+    // 47 if allAnnotatedClasses is already existent isa.
+    val converters = gsonBuilder.addTypeAdapters(
+        list,
+        excludedTypesForTypeAdapters,
+        excludeSuperclassesOfGivenClasses
+    )
 
     // 31
-    val gson: Gson
-    consoleErrorLn("gson " + measureTimeMillis {
-        gson = gsonBuilder
-            .also {
-                if (`$MA$Gson`.useDefaultGsonBuilderConfigs) {
-                    it.serializeNulls()
-                    it.setLenient()
-                    it.enableComplexMapKeySerialization()
+    return gsonBuilder
+        .also {
+            if (`$MA$Gson`.useDefaultGsonBuilderConfigs) {
+                it.serializeNulls()
+                it.setLenient()
+                it.enableComplexMapKeySerialization()
 
-                    /* -> Leave normal configs
-                    it.setFieldNamingStrategy { field ->
-                        "${field.type.name}\$${field.name}"
-                    }
-                    */
+                /* -> Leave normal configs
+                it.setFieldNamingStrategy { field ->
+                    "${field.type.name}\$${field.name}"
                 }
+                */
+            }
 
-                `$MA$Gson`.gsonBuilderConfigs(it)
-            }.create()
-            .setUsedGsonInConverters(converters)
-    })
-    return gson
+            `$MA$Gson`.gsonBuilderConfigs(it)
+        }.create()
+        .setUsedGsonInConverters(converters)
 }
 
 /**
@@ -254,13 +221,13 @@ private fun GsonBuilder.addTypeAdapters(
 
     val types = if (excludeSuperclassesOfGivenClasses) {
         // O^2 growth
-        val newAllAnnotatedClasses = allAnnotatedClasses.filterNot { annotatedClass ->
+        val newAllAnnotatedClasses = `$MA$Gson`.allAnnotatedClasses.filterNot { annotatedClass ->
             excludedClassesForTypeAdapters.any { annotatedClass.isAssignableFrom(it) }
         }
 
         newAllAnnotatedClasses - excludedTypesForTypeAdapters
     }else {
-        allAnnotatedClasses - excludedClassesForTypeAdapters - excludedTypesForTypeAdapters
+        `$MA$Gson`.allAnnotatedClasses - excludedClassesForTypeAdapters - excludedTypesForTypeAdapters
     }
 
     return types.map {

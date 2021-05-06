@@ -16,6 +16,7 @@ if (System.getenv()["JITPACK"] != true.toString()) {
     include(":sample:app")
     include(":sample:core")
     include(":sample:core2")
+    include(":sample:core3")
 }
 
 include(":core")

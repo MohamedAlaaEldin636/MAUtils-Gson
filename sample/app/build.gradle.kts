@@ -77,8 +77,7 @@ android {
 }
 
 dependencies {
-    api(project(Deps.own_libs.sample.core))
-    api(project(Deps.own_libs.sample.core2))
+    api(project(Deps.own_libs.sample.core3))
 
     kapt(project(Deps.own_libs.processor))
 

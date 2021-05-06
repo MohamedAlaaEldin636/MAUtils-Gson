@@ -44,6 +44,11 @@ object `$MA$Gson` {
     /**
      * - Shouldn't be accessed except by the library it's in it, But for specific reason it's made public.
      */
+    var checkObjectDeclarationEvenIfNotAnnotated = false
+
+    /**
+     * - Shouldn't be accessed except by the library it's in it, But for specific reason it's made public.
+     */
     fun getLibUsedGson(): Gson {
         return privateGeneratedGson
     }

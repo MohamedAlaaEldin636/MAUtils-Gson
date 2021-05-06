@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.maproductions.mohamedalaa.core2
+@file:Suppress("ClassName", "unused")
 
-import com.maproductions.mohamedalaa.annotation.MAAbstract
+package com.maproductions.mohamedalaa.core3
 
-//@MAAbstract
-sealed class Core2SealedClass {
-    object O : Core2SealedClass()
-}
+import com.maproductions.mohamedalaa.annotation.MAProviderOfAbstracts
+
+@MAProviderOfAbstracts
+data class _ProviderOfMAAbstracts(
+    var core3SealedClass: Core3SealedClass
+)

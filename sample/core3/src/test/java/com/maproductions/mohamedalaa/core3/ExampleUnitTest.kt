@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.maproductions.mohamedalaa.core
+package com.maproductions.mohamedalaa.core3
+
+import org.junit.Test
+
+import org.junit.Assert.*
 
 /**
- * - Same as [firstOrNull], and if an element is found then [MutableList.removeAt] will be used
- * to remove the found element from the `receiver` list isa.
+ * Example local unit test, which will execute on the development machine (host).
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
  */
-fun <T> MutableList<T>.firstOrNullWithRemoval(predicate: (T) -> Boolean): T? {
-    val index = indexOfFirstOrNull(predicate) ?: return null
-
-    val item = this[index]
-
-    removeAt(index)
-
-    return item
+class ExampleUnitTest {
+    @Test
+    fun addition_isCorrect() {
+        assertEquals(4, 2 + 2)
+    }
 }

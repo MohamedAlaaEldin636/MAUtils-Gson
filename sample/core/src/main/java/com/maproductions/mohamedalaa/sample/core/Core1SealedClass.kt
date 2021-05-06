@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.maproductions.mohamedalaa.core2
+package com.maproductions.mohamedalaa.sample.core
 
-import com.maproductions.mohamedalaa.annotation.MAAbstract
-
-//@MAAbstract
-sealed class Core2SealedClass {
-    object O : Core2SealedClass()
+sealed class Core1SealedClass {
+    object O : Core1SealedClass()
 }

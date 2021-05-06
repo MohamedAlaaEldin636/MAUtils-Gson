@@ -16,6 +16,7 @@
 package com.maproductions.mohamedalaa.sample.app
 
 import android.app.Application
+import com.maproductions.mohamedalaa.annotation.generated_as_internal_helper_package.MAGson
 import com.maproductions.mohamedalaa.core.BuildConfig
 import timber.log.Timber
 
@@ -23,6 +24,8 @@ class MyApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        MAGson.setup()
 
         // Setup Timber
         if (BuildConfig.DEBUG) {

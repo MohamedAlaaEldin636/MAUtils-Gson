@@ -21,5 +21,5 @@ import com.maproductions.mohamedalaa.annotation.MAProviderOfAbstracts
 
 @MAProviderOfAbstracts
 data class _ProviderOfMAAbstracts(
-    var float: Float
+    var core1SealedClass: Core1SealedClass
 )

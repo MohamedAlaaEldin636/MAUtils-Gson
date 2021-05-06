@@ -57,10 +57,14 @@ fun buildPropertySpecList(classesFullNames: List<String>): PropertySpec {
 @KotlinPoetMetadataPreview
 fun buildFunctionSpecSetup(fileSpecBuilder: FileSpec.Builder, classesFullNames: List<String>): FunSpec {
     fileSpecBuilder.addImport("com.google.gson", "Gson", "GsonBuilder")
-    fileSpecBuilder.addImport("com.maproductions.mohamedalaa.core", "\$MA\$Gson")
+    fileSpecBuilder.addImport("com.maproductions.mohamedalaa.core", "\$MA\$Gson", "fromJson")
 
     val paramUseDefaultGsonBuilderConfigs = ParameterSpec.builder("useDefaultGsonBuilderConfigs", Boolean::class)
         .defaultValue("true")
+        .build()
+
+    val paramCheckObjectDeclarationEvenIfNotAnnotated = ParameterSpec.builder("checkObjectDeclarationEvenIfNotAnnotated", Boolean::class)
+        .defaultValue("false")
         .build()
 
     val typeOfParamGsonBuilderConfigs = LambdaTypeName.get(
@@ -80,6 +84,13 @@ fun buildFunctionSpecSetup(fileSpecBuilder: FileSpec.Builder, classesFullNames: 
                     "\n" +
                     "- Not only sets up the library, But also provides customizations to the default used [Gson].\n" +
                     "\n" +
+                    "@param checkObjectDeclarationEvenIfNotAnnotated If true then no need to annotate\n" +
+                    "object declaration as it will be auto checked, But If true then on first time using\n" +
+                    "[fromJson] it will take about 700 milli second to be invoked as it will use reflection.\n" +
+                    "\n" +
+                    "@param gsonBuilderConfigs in case you wanna make more customizations like\n" +
+                    "[GsonBuilder.setFieldNamingStrategy] or any other customization to [GsonBuilder] isa.\n" +
+                    "\n" +
                     "@param useDefaultGsonBuilderConfigs if `true` then default [Gson] instance that will be used\n" +
                     "(which can be retrieved by [getLibUsedGson]) will have the following code\n" +
                     "```\n" +
@@ -88,10 +99,7 @@ fun buildFunctionSpecSetup(fileSpecBuilder: FileSpec.Builder, classesFullNames: 
                     "     .setLenient()\n" +
                     "     .enableComplexMapKeySerialization()\n" +
                     "```\n" +
-                    "Otherwise just ```GsonBuilder()``` is used.\n" +
-                    "\n" +
-                    "@param gsonBuilderConfigs in case you wanna make more customizations like\n" +
-                    "[GsonBuilder.setFieldNamingStrategy] or any other customization to [GsonBuilder] isa."
+                    "Otherwise just ```GsonBuilder()``` is used."
         )
         // endregion
 
@@ -101,11 +109,14 @@ fun buildFunctionSpecSetup(fileSpecBuilder: FileSpec.Builder, classesFullNames: 
 
         // Parameters
         addParameter(paramUseDefaultGsonBuilderConfigs)
+        addParameter(paramCheckObjectDeclarationEvenIfNotAnnotated)
         addParameter(paramGsonBuilderConfigs)
 
         // Code isa.
         addStatement(
             "`\$MA\$Gson`.useDefaultGsonBuilderConfigs = useDefaultGsonBuilderConfigs" +
+                    "\n" +
+                    "`\$MA\$Gson`.checkObjectDeclarationEvenIfNotAnnotated = checkObjectDeclarationEvenIfNotAnnotated" +
                     "\n" +
                     "`\$MA\$Gson`.gsonBuilderConfigs = gsonBuilderConfigs" +
                     "\n" +

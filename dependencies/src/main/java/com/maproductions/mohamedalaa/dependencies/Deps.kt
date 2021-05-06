@@ -135,6 +135,7 @@ object Deps {
         inner class Sample : EmptyBaseGroup() {
             val core = ownLib("sample:core")
             val core2 = ownLib("sample:core2")
+            val core3 = ownLib("sample:core3")
         }
     }
 

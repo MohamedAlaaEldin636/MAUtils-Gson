@@ -68,9 +68,11 @@ private abstract class GsonConverterWithFullTypeInfo(
     fun <E> fromJson(json: String?): E = json?.run {
         val type = GsonConverter.canonicalizeOrNull(genericType) ?: `$Gson$Types`.canonicalize(genericType)
 
-        (type as? Class<*>)?.kotlin?.objectInstance?.apply {
-            @Suppress("UNCHECKED_CAST")
-            return this as E
+        if (`$MA$Gson`.checkObjectDeclarationEvenIfNotAnnotated) {
+            (type as? Class<*>)?.kotlin?.objectInstance?.apply {
+                @Suppress("UNCHECKED_CAST")
+                return this as E
+            }
         }
 
         val usedGson = gson ?: privateGeneratedGson

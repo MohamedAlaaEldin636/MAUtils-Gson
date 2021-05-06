@@ -18,7 +18,7 @@ package com.maproductions.mohamedalaa.sample.app
 import com.maproductions.mohamedalaa.annotation.MAProviderOfAbstracts
 import com.maproductions.mohamedalaa.sample.core.normal_gson_same_field_name.AnnDC2
 
-@MAProviderOfAbstracts
+//@MAProviderOfAbstracts
 class Mido {
 
     lateinit var string: String

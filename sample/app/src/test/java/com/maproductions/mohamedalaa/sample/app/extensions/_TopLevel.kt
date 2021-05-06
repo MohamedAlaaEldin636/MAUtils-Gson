@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.maproductions.mohamedalaa.core2
+package com.maproductions.mohamedalaa.sample.app.extensions
 
-import com.maproductions.mohamedalaa.annotation.MAAbstract
+import com.maproductions.mohamedalaa.coloredconsole.consolePrintLn
+import kotlin.system.measureTimeMillis
 
-//@MAAbstract
-sealed class Core2SealedClass {
-    object O : Core2SealedClass()
+fun printMeasuredTimeMillis(prefix: String = "", code: () -> Unit) {
+    consolePrintLn("$prefix${measureTimeMillis(code)}", stacktraceLimit = 1)
 }

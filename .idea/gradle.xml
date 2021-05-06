@@ -31,6 +31,7 @@
             <option value="$PROJECT_DIR$/sample/app" />
             <option value="$PROJECT_DIR$/sample/core" />
             <option value="$PROJECT_DIR$/sample/core2" />
+            <option value="$PROJECT_DIR$/sample/core3" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
