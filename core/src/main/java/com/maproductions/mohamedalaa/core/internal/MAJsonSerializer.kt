@@ -16,7 +16,6 @@
 package com.maproductions.mohamedalaa.core.internal
 
 import com.google.gson.*
-import com.maproductions.mohamedalaa.coloredconsole.consoleWTFLn
 import com.maproductions.mohamedalaa.core.*
 import com.maproductions.mohamedalaa.core.getClassDeclaredFieldsAndSuperclassesDeclaredFields
 import com.maproductions.mohamedalaa.core.java.fromJsonOrNullJava
@@ -31,7 +30,7 @@ import java.lang.reflect.Type
  *
  * @see MAJsonDeserializer
  */
-internal class MAJsonSerializer : JsonSerializer<Any?> {
+internal class MAJsonSerializer(private val baseType: Type) : JsonSerializer<Any?> {
 
     companion object {
         const val OBJECT_SERIALIZATION = "{}"
@@ -61,11 +60,8 @@ internal class MAJsonSerializer : JsonSerializer<Any?> {
         val jsonObject = JSONObject()
         jsonObject.put(KEY_CLASS_FULL_NAME, src.javaClass.name)
 
-        // Object, Enum, String, Primitives
+        // Enum, String, Primitives
         (when {
-            src.javaClass.kotlin.isObject -> {
-                jsonObject.put(KEY_OBJECT_SERIALIZATION_JSON_STRING, OBJECT_SERIALIZATION)
-            }
             src.javaClass.isEnum -> {
                 jsonObject.put(KEY_ENUM_SERIALIZATION_JSON_STRING, src.toString())
             }
@@ -93,30 +89,33 @@ internal class MAJsonSerializer : JsonSerializer<Any?> {
         }
 
         // Check if can be serialized via normal serialization isa.
-        repeat(4) {
+        repeat(3) {
+            if (it == 1 && clazz == src.javaClass) {
+                return@repeat
+            }
+
             val newGson = when (it) {
-                0,1 -> getLibLikeGeneratedGson(src.javaClass)
-                2 -> getLibLikeGeneratedGson(clazz ?: return@repeat)
-                else -> getLibLikeGeneratedGson(excludedTypesForTypeAdapters = listOf(type ?: return@repeat))
+                0 -> getLibLikeGeneratedGson(baseType, src.javaClass)
+                1 -> getLibLikeGeneratedGson(baseType, clazz ?: return@repeat)
+                else -> getLibLikeGeneratedGson(baseType, MATypes.singleTypeForGsonExcludedTypesOrNull(type) ?: return@repeat)
             }
 
             val jsonString = when (it) {
-                1 -> src.toJsonOrNullJava(src.javaClass, newGson)
                 0 -> src.toJsonOrNull(newGson)
-                2 -> src.toJsonOrNullJava(clazz, newGson)
+                1 -> src.toJsonOrNullJava(clazz, newGson)
                 else -> src.toJsonOrNullWithFullTypeInfo(type ?: return@repeat, newGson)
             }
             if (jsonString != null) {
                 val newSrc = when (it) {
-                    0,1 -> jsonString.fromJsonOrNullJava(src.javaClass, newGson)
-                    2 -> jsonString.fromJsonOrNullJava(clazz ?: return@repeat, newGson)
+                    0 -> jsonString.fromJsonOrNullJava(src.javaClass, newGson)
+                    1 -> jsonString.fromJsonOrNullJava(clazz ?: return@repeat, newGson)
                     else -> jsonString.fromJsonOrNullWithFullTypeInfo(type, newGson)
                 }
 
                 if (src == newSrc) {
                     when (it) {
-                        0,1 -> jsonObject.put(KEY_CLASS_FULL_NAME, src.javaClass.name)
-                        2 -> jsonObject.put(KEY_CLASS_FULL_NAME, clazz)
+                        0 -> jsonObject.put(KEY_CLASS_FULL_NAME, src.javaClass.name)
+                        1 -> jsonObject.put(KEY_CLASS_FULL_NAME, clazz)
                         else -> {
                             jsonObject.remove(KEY_CLASS_FULL_NAME)
 
@@ -137,11 +136,30 @@ internal class MAJsonSerializer : JsonSerializer<Any?> {
             }
         }
 
+        // Object (might take less than 100 ms in first invocation that's why checked here)
+        src.javaClass.objectInstance()?.also {
+            jsonObject.put(KEY_OBJECT_SERIALIZATION_JSON_STRING, OBJECT_SERIALIZATION)
+            return jsonObject
+        }
+
         // Serialize all fields & super classes fields in the same manner as this fun (so recursion) isa.
         val fieldsJsonObject = JSONObject()
         fieldsJsonObject.fill(src)
 
         jsonObject.put(KEY_CUSTOM_SERIALIZATION_JSON_STRING, fieldsJsonObject)
+
+        // Any of below two return null happens in case of List<*> while items subtypes of object
+        // don't know if there is any other case, however if in future wanna solve such a thing
+        // then 1st root not item must be annotated so List, 2nd have additional key in json
+        // to indicate I will serialize whole thing by myself 3rd check if list/array/intArray...
+        // 4th on items if is a subtype of type args then treat item as if was annotated isa.
+        try {
+            if (src != jsonObject.toString().fromJsonOrNullJava(src.javaClass)) {
+                return null
+            }
+        }catch (throwable: Throwable) {
+            return null
+        }
 
         return jsonObject
     }
@@ -163,15 +181,9 @@ internal class MAJsonSerializer : JsonSerializer<Any?> {
         typeOfSrc: Type?,
         context: JsonSerializationContext?
     ): JsonElement? {
-        // todo if src.getFullTypeInfo() always java.lang.Object then no need, else add it in below optional param as well isa.
-        // Use consolePrint oe Logcat to check that out isa.
-        consoleWTFLn("Checking TODO of src.getFullTypeInfo() -> \n\t" + kotlin.runCatching { src?.getFullTypeInfo() }.getOrNull())
-
-        return innerSerialize(src)?.toJsonElement() ?: JsonNull.INSTANCE
+        return innerSerialize(src, type = MATypes.canonicalizeOrNull(typeOfSrc))
+            ?.toJsonElement() ?: JsonNull.INSTANCE
     }
-
-    // todo also test in the very complex conversions how much time via measureTimeMillis the conversion to/from both take isa.
-    // todo above of privateGenerateGson isa.
 
     /**
      * - fills `receiver` with fields of [src] class serialized as in [innerSerialize] isa.
@@ -219,30 +231,18 @@ internal class MAJsonSerializer : JsonSerializer<Any?> {
 
             field.isAccessible = isAccessible
 
-            // todo tests on StrangeProperties class instance isa. and check via equality isa.
-            // and Sealed<Sealed<Sealed>>> means having type params not just nested sealed classes isa.
-            // also test normal type params not annotated as it should work isa, from prev versions isa.
-            // and field instance has type params inside a class of sealed of sealed annotated isa.
-            // +
-            // all tests in Atoom isa.
-            // + girhub ex. normal conversion and others as well isa.
-            /*
-            todo but to test we need to make sure processor is as intented SO
-            go fix it first then come back or ensure annotations are correct isa.
-             */
-
-            // todo after all tests isa, check if _GsonConverter can be replaces with MATYpes and if in case of errprs
-            // then in MATYpes use wildcard.eliminate wildcard fun and also remove _GSONCOnverter as i think it is useless
-            // with MATYpes being existent isa.
             putOrThrow(key, jsonObject)
         }
     }
 
-    /*
-    Another way
-    JSONObject myData = ...
-    Gson gson = new Gson();
-    JsonElement element = gson.fromJson(myData.toString(), JsonElement.class);
+    /**
+     * ### Another approach for conversion
+     * ```
+     * Another way
+     * JSONObject myData = ...
+     * Gson gson = new Gson();
+     * JsonElement element = gson.fromJson(myData.toString(), JsonElement.class);
+     * ```
      */
     private fun JSONObject.toJsonElement(): JsonElement = JsonParser.parseString(this.toString())
 

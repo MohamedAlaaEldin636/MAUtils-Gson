@@ -20,19 +20,54 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.maproductions.mohamedalaa.coloredconsole.consolePrintLn
 import com.maproductions.mohamedalaa.coloredconsole.consoleVerboseLn
+import com.maproductions.mohamedalaa.core.fromJson
+import com.maproductions.mohamedalaa.core.fromJsonOrNull
+import com.maproductions.mohamedalaa.core.toJson
 import com.maproductions.mohamedalaa.core.toJsonOrNull
 import com.maproductions.mohamedalaa.sample.app.model.StrangeProperties
+import com.maproductions.mohamedalaa.sample.app.utils.BaseGsonTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.lang.reflect.Type
 import kotlin.reflect.full.declaredMemberProperties
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @Suppress("LocalVariableName")
 @Config(manifest = Config.NONE, sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
-class SemiNormalConversion {
+class SemiNormalConversion : BaseGsonTest() {
+
+    private val strangeProperties = StrangeProperties.createInt()
+    private val strangeProperties2 = StrangeProperties(
+        "88", listOf("2"), "sasa", listOf(null, null)
+    )
+
+    @Test
+    fun strangeProps1() {
+        json = strangeProperties.toJson()
+        val from = json.fromJson<StrangeProperties<Int>>()
+
+        assertEquals(strangeProperties, from)
+
+        json = strangeProperties2.toJson()
+        val from2 = json.fromJson<StrangeProperties<String>>()
+
+        assertEquals(strangeProperties2, from2)
+
+        val strangePropertiesTmp = StrangeProperties<Any>(
+            8,
+            listOf("1"),
+            "I am string isa.",
+            listOf(4),
+        )
+        val json3 = strangePropertiesTmp.toJsonOrNull()
+        val from3 = json3.fromJsonOrNull<StrangeProperties<Any>>()
+
+        assertNotEquals(strangePropertiesTmp, from3)
+    }
 
     @Test
     fun emptyString() {
@@ -44,14 +79,13 @@ class SemiNormalConversion {
 
     @Test
     fun originalGson() {
-        val gson = GsonBuilder()
-            .serializeNulls()
-            .setLenient()
-            .enableComplexMapKeySerialization()
-            .create()
-
-        val o1 = StrangeProperties<Any>()
-        val j1 = gson.toJson(o1.v1) // todo o1.v1 as Any in case was annotated and diff declaration isa.
+        val o1 = StrangeProperties<Any>(
+            8,
+            listOf("1"),
+            "I am string isa.",
+            listOf(4),
+        )
+        val j1 = gson.toJson(o1.v1) // to-do o1.v1 as Any in case was annotated and diff declaration isa.
 
         consoleVerboseLn("j1 $j1")
         consoleVerboseLn("o1.v1 ${o1.v1}")

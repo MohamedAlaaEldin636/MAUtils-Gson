@@ -16,8 +16,34 @@
 package com.maproductions.mohamedalaa.sample.app
 
 import com.maproductions.mohamedalaa.annotation.MAAbstract
+import com.maproductions.mohamedalaa.sample.app.model.AppSealedClass2
 
 @MAAbstract
 sealed class AppSealedClass {
-    object O : AppSealedClass()
+    object O1 : AppSealedClass()
+
+    data class D1(
+        var string: String
+    ) : AppSealedClass()
+
+    data class D2(
+        var string: String,
+        var double: Double
+    ) : AppSealedClass()
+
+    sealed class SubSealedClass1 : AppSealedClass() {
+
+        object SubO1 : SubSealedClass1()
+
+        sealed class SubSubSealedClass2 : SubSealedClass1() {
+
+            data class SubSubD1(
+                var appSealedClass: AppSealedClass?,
+                var appSealedClass2: AppSealedClass2,
+            ) : SubSubSealedClass2()
+
+        }
+
+    }
+
 }

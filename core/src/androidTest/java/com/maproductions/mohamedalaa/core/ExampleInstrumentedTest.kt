@@ -28,27 +28,7 @@ import org.junit.Assert.*
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-//@RunWith(Robo::class)
 class ExampleInstrumentedTest {
-
-    /*
-    todo
-    besides test cases in Atom add below isa.
-
-    List<Sealed Class >
-
-    Sealed Class
-
-    Sealed Class has fields of another Sealed Class and self nullable Sealed Class
-    and List of self and other sealed class and another annotated not sealed class isa.
-
-    custom class not annotated having field of an annotated sealed class isa.
-
-    include Double and float checks in a single class isa.
-
-
-    additional field not in the constructor in sef and superclass
-     */
 
     @Test
     fun useAppContext() {

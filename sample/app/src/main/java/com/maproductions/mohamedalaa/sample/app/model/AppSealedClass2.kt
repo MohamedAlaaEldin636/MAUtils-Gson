@@ -13,14 +13,27 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.maproductions.mohamedalaa.sample.app;
+package com.maproductions.mohamedalaa.sample.app.model
 
-public enum Z1 {
+import com.maproductions.mohamedalaa.annotation.MAAbstract
 
-    HIDE /*(4, 5)*/, SHOW;
+@MAAbstract
+sealed class AppSealedClass2 {
 
-    /*public static Z1 valueOf(String string) {
-        return HIDE;
-    }*/
+    data class D1(
+        var int: Int
+    ) : AppSealedClass2()
+
+    sealed class SubSealedClass : AppSealedClass2() {
+
+        object SubO1 : SubSealedClass()
+
+        data class D1(
+            var int: Int = 4,
+            var string: String = "string",
+            var list: List<String> = listOf("hello", "2")
+        ) : SubSealedClass()
+
+    }
 
 }

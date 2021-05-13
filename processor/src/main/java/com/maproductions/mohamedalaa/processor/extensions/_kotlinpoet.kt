@@ -20,7 +20,7 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 
 @KotlinPoetMetadataPreview
-fun buildPropertySpecList(classesFullNames: List<String>): PropertySpec {
+fun buildPropertySpecList(classesFullNames: Set<String>): PropertySpec {
     val itemType = KotlinpoetUtils.parameterizedTypeName(
         Class::class.asTypeName(),
         STAR,
@@ -44,7 +44,7 @@ fun buildPropertySpecList(classesFullNames: List<String>): PropertySpec {
 
         // Code isa.
         initializer(
-            "listOf(${classesFullNames.joinToString { "$it::class.java" }})"
+            "listOf(${classesFullNames.joinToString { it }})"
         )
     }
 
@@ -55,7 +55,7 @@ fun buildPropertySpecList(classesFullNames: List<String>): PropertySpec {
  * @param fileSpecBuilder Needed to add import statements in it isa.
  */
 @KotlinPoetMetadataPreview
-fun buildFunctionSpecSetup(fileSpecBuilder: FileSpec.Builder, classesFullNames: List<String>): FunSpec {
+fun buildFunctionSpecSetup(fileSpecBuilder: FileSpec.Builder, classesFullNames: Set<String>): FunSpec {
     fileSpecBuilder.addImport("com.google.gson", "Gson", "GsonBuilder")
     fileSpecBuilder.addImport("com.maproductions.mohamedalaa.core", "\$MA\$Gson", "fromJson")
 
@@ -83,6 +83,8 @@ fun buildFunctionSpecSetup(fileSpecBuilder: FileSpec.Builder, classesFullNames: 
             "- **Must** be called on Application.onCreate to set up the library.\n" +
                     "\n" +
                     "- Not only sets up the library, But also provides customizations to the default used [Gson].\n" +
+                    "\n" +
+                    "- Note the library forces `GsonBuilder().disableHtmlEscaping()` as it needs it to work properly.\n" +
                     "\n" +
                     "@param checkObjectDeclarationEvenIfNotAnnotated If true then no need to annotate\n" +
                     "object declaration as it will be auto checked, But If true then on first time using\n" +
@@ -120,7 +122,7 @@ fun buildFunctionSpecSetup(fileSpecBuilder: FileSpec.Builder, classesFullNames: 
                     "\n" +
                     "`\$MA\$Gson`.gsonBuilderConfigs = gsonBuilderConfigs" +
                     "\n" +
-                    "`\$MA\$Gson`.allAnnotatedClasses = listOf(${classesFullNames.joinToString { "$it::class.java" }})"
+                    "`\$MA\$Gson`.allAnnotatedClasses = listOf(${classesFullNames.joinToString { it }})"
         )
     }
 

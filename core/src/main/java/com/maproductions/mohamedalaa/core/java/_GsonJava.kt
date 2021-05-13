@@ -21,7 +21,7 @@ package com.maproductions.mohamedalaa.core.java
 import com.google.gson.Gson
 import com.google.gson.internal.`$Gson$Types`
 import com.maproductions.mohamedalaa.core.*
-import com.maproductions.mohamedalaa.core.internal.canonicalizeOrNull
+import com.maproductions.mohamedalaa.core.internal.MATypes
 import com.maproductions.mohamedalaa.core.privateGeneratedGson
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -41,15 +41,21 @@ import java.lang.reflect.Type
  */
 @JvmOverloads
 @JvmName("toJson")
-fun <E> E?.toJsonJava(elementClass: Class<*>? = null, gson: Gson? = null): String = this?.run {
+fun <E> E?.toJsonJava(elementClass: Class<*>? = null, gson: Gson? = null): String {
     val usedGson = gson ?: privateGeneratedGson
 
-    if (elementClass == null) {
-        usedGson.toJson(this)
-    }else {
-        usedGson.toJson(this, elementClass)
+    val value = when {
+        this == null -> null
+        elementClass == null -> usedGson.toJson(this)
+        else -> usedGson.toJson(this, elementClass)
     }
-} ?: throw RuntimeException("Can't convert `null` to JSON String")
+
+    return if (value != null && value != "null") {
+        value
+    }else {
+        throw RuntimeException("Can't convert $this to JSON String")
+    }
+}
 
 /**
  * - Same as [toJsonJava] but returns `null` instead of throwing an exception isa.
@@ -78,18 +84,22 @@ fun <E> E?.toJsonOrNullJava(elementClass: Class<*>? = null, gson: Gson? = null):
  */
 @JvmOverloads
 @JvmName("fromJson")
-fun <E> String?.fromJsonJava(elementClass: Class<E>, gson: Gson? = null): E = this?.run {
-    if (`$MA$Gson`.checkObjectDeclarationEvenIfNotAnnotated) {
-        (elementClass as? Class<*>)?.kotlin?.objectInstance?.apply {
-            @Suppress("UNCHECKED_CAST")
-            return@run this as E?
+fun <E> String?.fromJsonJava(elementClass: Class<E>, gson: Gson? = null): E {
+    if (this != null) {
+        if (`$MA$Gson`.checkObjectDeclarationEvenIfNotAnnotated) {
+            (elementClass as? Class<*>)?.objectInstance()?.apply {
+                @Suppress("UNCHECKED_CAST")
+                (this as? E)?.also { return it }
+            }
         }
     }
 
     val usedGson = gson ?: privateGeneratedGson
 
-    usedGson.fromJson(this, elementClass)
-} ?: throw RuntimeException("Can't convert `null` to a non-null object of type $elementClass")
+    val value = if (this == null) null else usedGson.fromJson(this, elementClass)
+
+    return value ?: throw RuntimeException("Can't convert $this to object of type $elementClass")
+}
 
 /**
  * - Same as [fromJsonJava] but returns `null` instead of throwing an exception isa.
@@ -142,7 +152,7 @@ abstract class GsonConverter<E>(private val gson: Gson? = null) {
      *
      * @throws RuntimeException in case of any error while converting isa.
      */
-    fun toJson(element: E): String {
+    fun toJson(element: E): String? {
         val type = getSuperclassTypeParameter(javaClass)
 
         val usedGson = gson ?: privateGeneratedGson
@@ -153,7 +163,7 @@ abstract class GsonConverter<E>(private val gson: Gson? = null) {
     /**
      * - Same as [Gson.fromJson] isa.
      */
-    fun fromJson(json: String): E {
+    fun fromJson(json: String): E? {
         val type = getSuperclassTypeParameter(javaClass)
 
         val usedGson = gson ?: privateGeneratedGson
@@ -171,12 +181,7 @@ abstract class GsonConverter<E>(private val gson: Gson? = null) {
 
         val parameterizedType = superclass as ParameterizedType
 
-        // NOTION -> superclass represents generic type with type params even <? extends Pair> etc...
-        // canonicalize represents Type however keeps type parameters correct as well isa.
-        // BUT
-        // my own canonicalize doesn't keep ? extends while other one does it
-
-        return GsonConverter.canonicalizeOrNull(
+        return MATypes.canonicalizeOrNullAndEliminateWildcardTypes(
             parameterizedType.actualTypeArguments[0]
         ) ?: `$Gson$Types`.canonicalize(parameterizedType.actualTypeArguments[0])
     }

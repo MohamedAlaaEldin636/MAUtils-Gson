@@ -27,7 +27,4 @@ class Mido {
 
     lateinit var annDC2: AnnDC2
 
-    //lateinit var list: List<*> todo what if List<Int> will it only enters my serilizer if is List<Int> isa ?!
-    // also before that check what the processor translates it to ?!?!
-
 }

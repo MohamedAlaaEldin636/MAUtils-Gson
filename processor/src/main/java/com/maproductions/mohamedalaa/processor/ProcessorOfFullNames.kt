@@ -33,7 +33,6 @@ import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
 
-
 /**
  * ## What this Processor does
  *
@@ -99,15 +98,6 @@ class ProcessorOfFullNames : SpecialAbstractProcessor() {
         annotations: MutableSet<out TypeElement>,
         roundEnv: RoundEnvironment
     ): Boolean {
-        // todo then if _GonConverter can be replaced by MATypes if not due to ? super wildcard to normal
-        // then make in MATypes wildcard.eliminateWildcards isa. and check if works isa and del _GsonConverter
-        // to remove duplicate code isa.
-
-        /*
-        todo then after processor is 100% isa, correct then adjust _Gson to make allANnotat... val
-        be removed and use the one in $MA$Gson which will be planted and in tests since App not called
-        nta b nafsak call MAGson.setup isa.
-         */
         val classes = kotlin.runCatching {
             val reflections = Reflections(
                 generatedClassPackageName,
@@ -154,8 +144,18 @@ class ProcessorOfFullNames : SpecialAbstractProcessor() {
         val helperClassFileSpecBuilder = FileSpec.builder(generatedClassPackageName, helperClassSimpleName)
         val publicClassFileSpecBuilder = FileSpec.builder(generatedClassPackageName, publicClassSimpleName)
 
-        val propertySpecList = buildPropertySpecList(fullNamesList.distinct())
-        val functionSpecSetup = buildFunctionSpecSetup(helperClassFileSpecBuilder, fullNamesList.distinct())
+        val classesFullNames = mutableSetOf<String>()
+        for (item in fullNamesList.distinct()) {
+            classesFullNames += "$item::class.java"
+
+            item.toJavaWrapperOfPrimitiveOrNull()?.also {
+                classesFullNames += it
+            }
+        }
+        printWriter?.println(classesFullNames)
+
+        val propertySpecList = buildPropertySpecList(classesFullNames)
+        val functionSpecSetup = buildFunctionSpecSetup(helperClassFileSpecBuilder, classesFullNames)
         val functionSpecGetLibUsedGson = buildFunctionSpecGetLibUsedGson(helperClassFileSpecBuilder)
 
         for (import in helperClassFileSpecBuilder.imports) {

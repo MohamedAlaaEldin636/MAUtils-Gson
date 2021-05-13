@@ -32,8 +32,6 @@ data class DC1(
     var int: Int = 9
 )
 
-// todo fix processor it didn't add below except with @MAProvider isa.
-//@MAAbstract
 data class AnnDC2(
     var string: String
 )

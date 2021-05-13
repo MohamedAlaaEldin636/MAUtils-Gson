@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
+@file:Suppress("MemberVisibilityCanBePrivate", "unused")
+
 package com.maproductions.mohamedalaa.core.internal
 
+import androidx.annotation.RestrictTo
 import com.maproductions.mohamedalaa.core.checkTrue
 import java.lang.reflect.*
 
@@ -24,13 +27,14 @@ import java.lang.reflect.*
  * - Converts [Type], [ParameterizedType], [GenericArrayType], [WildcardType] & [TypeVariable]
  * to/from [String] isa.
  */
-internal object MATypes {
+@RestrictTo(RestrictTo.Scope.LIBRARY)
+object MATypes {
 
     fun typeToString(type: Type): String {
         return if (type is Class<*> && type.isArray.not()) {
             type.name
         }else {
-            type.toString()
+            canonicalize(type).toString()
         }
     }
 
@@ -62,13 +66,15 @@ internal object MATypes {
 
                     // split , not inside <> -> then -> use stringToType for each argument isa.
                     var bracketsCount = 0
-                    var index = 0
+                    var index = -1
                     val charArray = charArrayOf('<', '>', ',')
                     val listOfCommasIndices = mutableListOf(-1)
                     while (true) {
-                        index = totalStringOfParams.indexOfAny(charArray, startIndex = index)
+                        index = totalStringOfParams.indexOfAny(charArray, startIndex = index.inc())
 
-                        if (index == -1) break
+                        if (index == -1) {
+                            break
+                        }
 
                         when (totalStringOfParams[index]) {
                             '<' -> bracketsCount++
@@ -83,7 +89,7 @@ internal object MATypes {
                     val actualTypeArguments = listOfCommasIndices.zipWithNext().map { (startIndex, endIndex) ->
                         val stringOfType = totalStringOfParams.substring(startIndex.inc(), endIndex).trim()
 
-                        stringToType(stringOfType)
+                        stringToType(stringOfType.trim())
                     }
 
                     ParameterizedTypeImpl.create(
@@ -165,10 +171,124 @@ internal object MATypes {
                 }
             }
             else -> {
-                Class.forName(string)
+                val lastSpaceIndex = string.lastIndexOf(" ")
+
+                val name = if (lastSpaceIndex != -1) {
+                    string.substring(lastSpaceIndex.inc())
+                }else {
+                    string
+                }
+
+                when (name) {
+                    Int::class.java.toString() -> Int::class.java
+                    Float::class.java.toString() -> Int::class.java
+                    Long::class.java.toString() -> Int::class.java
+                    Double::class.java.toString() -> Int::class.java
+                    Byte::class.java.toString() -> Int::class.java
+                    Short::class.java.toString() -> Int::class.java
+                    Boolean::class.java.toString() -> Int::class.java
+                    Char::class.java.toString() -> Int::class.java
+                    else -> Class.forName(name)
+                }
             }
         }
     }
+
+    fun eliminateWildcardTypes(type: Type): Type = when (type) {
+        is Class<*> -> {
+            if (type.isArray) GenericArrayTypeImpl.create(eliminateWildcardTypes(type.componentType!!)) else type
+        }
+        is ParameterizedType -> {
+            val ownerType = type.ownerType?.let { eliminateWildcardTypes(it) }
+            val rawType = eliminateWildcardTypes(type.rawType)
+            val actualTypeArguments = type.actualTypeArguments.map {
+                eliminateWildcardTypes(it)
+            }
+
+            ParameterizedTypeImpl.create(ownerType, rawType, actualTypeArguments.toTypedArray())
+        }
+        is GenericArrayType -> {
+            GenericArrayTypeImpl.create(eliminateWildcardTypes(type.genericComponentType))
+        }
+        is WildcardType -> {
+            val newType = type.lowerBounds.firstOrNull()
+                ?: type.upperBounds.firstOrNull()
+                ?: Any::class.java
+
+            eliminateWildcardTypes(newType)
+        }
+        is TypeVariable<*> -> {
+            TypeVariableImpl.create(
+                type.bounds.map { eliminateWildcardTypes(it) }.toTypedArray(),
+                type.genericDeclaration,
+                type.name
+            )
+        }
+        else -> throw RuntimeException("Can\'t canonicalize type -> $type")
+    }
+
+    /**
+     * - Since returned type is used for excluded types when creating a new Gson then normally
+     * if type was a primitive one we should have returned both the primitive and it's wrapper
+     * since processor add both when 1 of them is detected, However this point will never be
+     * reached isa since if the type was primitive then on serialization a special key
+     * would be used (ex. KEY_SUPPORTED_TYPE_SERIALIZATION_JSON_STRING) before thinking of
+     * creating the newGson isa.
+     *
+     * @return just List type (class) if given List<Int> (parameterized type), So always return
+     * class type isa.
+     */
+    fun singleTypeForGsonExcludedTypes(type: Type): Type {
+        return when(type) {
+            is Class<*> -> {
+                if (type.isArray) {
+                    when (type.componentType!!) {
+                        Int::class.java -> IntArray::class.java
+                        Float::class.java -> FloatArray::class.java
+                        Long::class.java -> LongArray::class.java
+                        Double::class.java -> DoubleArray::class.java
+                        Short::class.java -> ShortArray::class.java
+                        Byte::class.java -> ByteArray::class.java
+                        Boolean::class.java -> BooleanArray::class.java
+                        Char::class.java -> CharArray::class.java
+                        else -> Array::class.java
+                    }
+                }else {
+                    type
+                }
+            }
+            is ParameterizedType -> {
+                singleTypeForGsonExcludedTypes(type.rawType)
+            }
+            is GenericArrayType -> {
+                Array::class.java
+            }
+            is WildcardType -> {
+                singleTypeForGsonExcludedTypes(
+                    eliminateWildcardTypes(type)
+                )
+            }
+            is TypeVariable<*> -> {
+                for (bound in type.bounds) {
+                    val newType = singleTypeForGsonExcludedTypes(bound)
+
+                    if (newType is Class<*>) {
+                        return newType
+                    }
+                }
+
+                Any::class.java
+            }
+            else -> throw RuntimeException("Can\'t canonicalize type -> $type")
+        }
+    }
+
+    /**
+     * Same as [singleTypeForGsonExcludedTypes]
+     */
+    fun singleTypeForGsonExcludedTypesOrNull(type: Type?): Type? = kotlin.runCatching {
+        if (type == null) null else singleTypeForGsonExcludedTypes(type)
+    }.getOrNull()
 
     fun canonicalize(type: Type): Type = when(type) {
         is Class<*> -> {
@@ -191,6 +311,20 @@ internal object MATypes {
             TypeVariableImpl.create(type.bounds, type.genericDeclaration, type.name)
         }
         else -> throw RuntimeException("Can\'t canonicalize type -> $type")
+    }
+
+    fun canonicalizeOrNull(type: Type?): Type? = kotlin.runCatching {
+        canonicalize(type ?: return@runCatching null)
+    }.getOrNull()
+
+    fun canonicalizeAndEliminateWildcardTypes(type: Type): Type {
+        return eliminateWildcardTypes(canonicalize(type))
+    }
+
+    fun canonicalizeOrNullAndEliminateWildcardTypes(type: Type?): Type? {
+        return kotlin.runCatching {
+            canonicalizeAndEliminateWildcardTypes(type ?: return null)
+        }.getOrNull()
     }
 
     private fun Type.checkNotPrimitive() {
@@ -404,6 +538,14 @@ internal object MATypes {
             return result
         }
 
+    }
+
+    fun subtypeOf(bound: Type): WildcardType {
+        return WildcardTypeImpl.create(arrayOf(bound), arrayOf())
+    }
+
+    fun supertypeOf(bound: Type): WildcardType {
+        return WildcardTypeImpl.create(arrayOf(), arrayOf(bound))
     }
 
 }

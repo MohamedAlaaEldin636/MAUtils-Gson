@@ -15,4 +15,21 @@
 
 package com.maproductions.mohamedalaa.processor.extensions
 
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.asTypeName
+
 fun String.replaceForwardSlashWithDot(): String = replace("/", ".")
+
+fun String.toJavaWrapperOfPrimitiveOrNull(): String? {
+    return "java.lang." + when (ClassName("", this)) {
+        Int::class.asTypeName() -> "Integer"
+        Float::class.asTypeName() -> "Float"
+        Long::class.asTypeName() -> "Long"
+        Double::class.asTypeName() -> "Double"
+        Short::class.asTypeName() -> "Short"
+        Byte::class.asTypeName() -> "Byte"
+        Boolean::class.asTypeName() -> "Boolean"
+        Char::class.asTypeName() -> "Character"
+        else -> return null
+    } + "::class.java"
+}

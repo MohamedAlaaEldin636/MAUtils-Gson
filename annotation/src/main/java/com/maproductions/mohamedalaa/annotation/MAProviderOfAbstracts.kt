@@ -29,7 +29,7 @@ package com.maproductions.mohamedalaa.annotation
  *
  * 1. Create a data class or any class with properties of classes that you want them to be specially
  * converted to json (i.e. abstract classes), if any of the classes has type param(s) just use '*'
- * which is any class isa. todo what if i donot want * and specific type param is it possible isa ?!
+ * which is any class isa.
  *
  * 2. Annotate that data class with this annotation isa.
  */

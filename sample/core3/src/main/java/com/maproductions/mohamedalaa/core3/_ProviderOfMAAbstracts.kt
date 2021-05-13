@@ -21,5 +21,8 @@ import com.maproductions.mohamedalaa.annotation.MAProviderOfAbstracts
 
 @MAProviderOfAbstracts
 data class _ProviderOfMAAbstracts(
-    var core3SealedClass: Core3SealedClass
+    var core3SealedClass: Core3SealedClass,
+    //var double: Double?,
+    //var int: Int,
+    var list: List<*>,
 )

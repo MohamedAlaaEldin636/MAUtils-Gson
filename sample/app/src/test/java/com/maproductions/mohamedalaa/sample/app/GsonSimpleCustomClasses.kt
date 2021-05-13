@@ -16,15 +16,12 @@
 package com.maproductions.mohamedalaa.sample.app
 
 import android.os.Build
-import com.google.gson.GsonBuilder
-import com.maproductions.mohamedalaa.annotation.generated_as_internal_helper_package.MAGson
-import com.maproductions.mohamedalaa.coloredconsole.consolePrintLn
 import com.maproductions.mohamedalaa.core.fromJson
 import com.maproductions.mohamedalaa.core.toJson
 import com.maproductions.mohamedalaa.sample.app.extensions.printMeasuredTimeMillis
+import com.maproductions.mohamedalaa.sample.app.utils.BaseGsonTest
 import com.maproductions.mohamedalaa.sample.core.simple_custom_classes.SimpleCustomClass1
 import com.maproductions.mohamedalaa.sample.core.simple_custom_classes.SimpleCustomClass2
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -34,7 +31,9 @@ import kotlin.test.assertEquals
 @Suppress("LocalVariableName")
 @Config(manifest = Config.NONE, sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
-class GsonSimpleCustomClasses {
+class GsonSimpleCustomClasses : BaseGsonTest() {
+
+    //region Properties
 
     private val simpleCustomClass1N1 = SimpleCustomClass1(
         "value", 32
@@ -53,23 +52,7 @@ class GsonSimpleCustomClasses {
         "mido 2",25333, 339933f, simpleCustomClass1N1, simpleCustomClass2N2
     )
 
-    private val gson by lazy {
-        GsonBuilder()
-            .serializeNulls()
-            .setLenient()
-            .enableComplexMapKeySerialization()
-            /*.setFieldNamingStrategy {
-                "${it.declaringClass}\$${it.name}"
-            }*/
-            .create()
-    }
-
-    @Before
-    fun appSetups() {
-        MAGson.setup(
-            /*checkObjectDeclarationEvenIfNotAnnotated = true*/ // Default is false
-        )
-    }
+    //endregion
 
     @Test
     fun simpleCustomClass1() = printMeasuredTimeMillis {

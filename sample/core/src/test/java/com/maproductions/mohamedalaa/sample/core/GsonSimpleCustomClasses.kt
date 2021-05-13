@@ -30,18 +30,6 @@ import org.robolectric.annotation.Config
 import kotlin.system.measureTimeMillis
 import kotlin.test.assertEquals
 
-// todo problem is 1st time used takes about 700 ~ 1000 millis which is due to reflection to get
-// all classes isa.
-/*
-1. make processor read other module and del and recreate to get all annotated classes isa,
-
-2. if 1. not possible then all mut be in app module ba2a ha3mel eh shoflak tare2a isa.
-
-3. make processor generate the setup fun isa.
-
-
-z. del unneeeded test classes isa.
- */
 @Suppress("LocalVariableName")
 @Config(manifest = Config.NONE, sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)

@@ -80,6 +80,9 @@ dependencies {
 
     api(Deps.gson)
 
+    api("androidx.annotation:annotation:1.2.0")
+    //lintPublish("androidx.annotation:annotation:1.2.0")
+
     debugApi(Deps.colored_console)
 
     //api("de.ruedigermoeller:fst:2.48-jdk-6")

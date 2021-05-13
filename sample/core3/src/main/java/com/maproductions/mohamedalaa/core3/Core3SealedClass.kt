@@ -19,5 +19,11 @@ import com.maproductions.mohamedalaa.annotation.MAAbstract
 
 @MAAbstract
 sealed class Core3SealedClass {
-    object O : Core3SealedClass()
+    object Object1 : Core3SealedClass()
+
+    data class Data1(
+        var string: String = "Hello",
+        var float: Float = 5.3f,
+        var pair1: Pair<Float, Double> = 3.43f to 43.499,
+    ) : Core3SealedClass()
 }

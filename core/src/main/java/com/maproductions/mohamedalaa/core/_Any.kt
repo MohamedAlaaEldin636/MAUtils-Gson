@@ -19,8 +19,7 @@ package com.maproductions.mohamedalaa.core
 
 import com.google.gson.Gson
 import com.google.gson.internal.`$Gson$Types`
-import com.maproductions.mohamedalaa.core.internal.canonicalizeOrNull
-import com.maproductions.mohamedalaa.core.java.GsonConverter
+import com.maproductions.mohamedalaa.core.internal.MATypes
 import java.lang.reflect.Field
 import java.lang.reflect.Type
 
@@ -28,25 +27,31 @@ internal fun Any.getClassDeclaredFieldsAndSuperclassesDeclaredFields(): List<Fie
     return javaClass.declaredFieldsForSuperclassesOnly(javaClass.declaredFields.filterNotNull())
 }
 
-internal fun Any?.toJsonWithFullTypeInfo(genericType: Type, gson: Gson? = null): String = this?.run {
+internal fun Any?.toJsonWithFullTypeInfo(genericType: Type, gson: Gson? = null): String {
     val usedGson = gson ?: privateGeneratedGson
 
-    object : GsonConverterWithFullTypeInfo(genericType, usedGson){}.toJson(this)
-} ?: throw RuntimeException("Can't convert `null` to JSON String")
+    val value = if (this == null) null else object : GsonConverterWithFullTypeInfo(genericType, usedGson){}.toJson(this)
+
+    return if (value != null && value != "null") {
+        value
+    }else {
+        throw RuntimeException("Can't convert $this to JSON String")
+    }
+}
 
 internal fun Any?.toJsonOrNullWithFullTypeInfo(genericType: Type, gson: Gson? = null): String? = runCatching {
     toJsonWithFullTypeInfo(genericType, gson)
 }.getOrNull()
 
-internal fun String?.fromJsonWithFullTypeInfo(genericType: Type?, gson: Gson? = null): Any = this?.run {
-    if (genericType == null) {
-        throw RuntimeException("Can't convert [$this] to `null` genericType`")
-    }
-
+internal fun String?.fromJsonWithFullTypeInfo(genericType: Type?, gson: Gson? = null): Any {
     val usedGson = gson ?: privateGeneratedGson
 
-    object : GsonConverterWithFullTypeInfo(genericType, usedGson){}.fromJson(this) as Any
-} ?: throw RuntimeException("Can't convert `null` to a non-null object")
+    val value = if (this == null || genericType == null) null else {
+        object : GsonConverterWithFullTypeInfo(genericType, usedGson){}.fromJson(this) as? Any
+    }
+
+    return value ?: throw RuntimeException("Can't convert $this to a non-null object")
+}
 
 internal fun String?.fromJsonOrNullWithFullTypeInfo(genericType: Type?, gson: Gson? = null): Any? = runCatching {
     fromJsonWithFullTypeInfo(genericType, gson)
@@ -57,27 +62,29 @@ private abstract class GsonConverterWithFullTypeInfo(
     private val gson: Gson? = null
 ) {
 
-    fun <E> toJson(element: E?): String = element?.run {
-        val type = GsonConverter.canonicalizeOrNull(genericType) ?: `$Gson$Types`.canonicalize(genericType)
+    fun <E> toJson(element: E?): String? {
+        val type = MATypes.canonicalizeOrNullAndEliminateWildcardTypes(genericType) ?: `$Gson$Types`.canonicalize(genericType)
 
         val usedGson = gson ?: privateGeneratedGson
 
-        usedGson.toJson(this, type)
-    } ?: throw RuntimeException("Can't convert `null` to JSON String")
+        return if (element == null) null else usedGson.toJson(element, type)
+    }
 
-    fun <E> fromJson(json: String?): E = json?.run {
-        val type = GsonConverter.canonicalizeOrNull(genericType) ?: `$Gson$Types`.canonicalize(genericType)
+    fun <E> fromJson(json: String?): E? {
+        val type = MATypes.canonicalizeOrNullAndEliminateWildcardTypes(genericType) ?: `$Gson$Types`.canonicalize(genericType)
 
-        if (`$MA$Gson`.checkObjectDeclarationEvenIfNotAnnotated) {
-            (type as? Class<*>)?.kotlin?.objectInstance?.apply {
-                @Suppress("UNCHECKED_CAST")
-                return this as E
+        if (json != null) {
+            if (`$MA$Gson`.checkObjectDeclarationEvenIfNotAnnotated) {
+                (type as? Class<*>)?.objectInstance()?.apply {
+                    @Suppress("UNCHECKED_CAST")
+                    (this as? E)?.also { return it }
+                }
             }
         }
 
         val usedGson = gson ?: privateGeneratedGson
 
-        usedGson.fromJson(json, type)
-    } ?: throw RuntimeException("Can't convert `null` to a non-null object")
+        return if (json == null) null else usedGson.fromJson(json, type)
+    }
 
 }

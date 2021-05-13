@@ -29,7 +29,7 @@ import java.lang.reflect.Type
  *
  * @see MAJsonSerializer
  */
-class MAJsonDeserializer : JsonDeserializer<Any?> {
+class MAJsonDeserializer(private val baseType: Type) : JsonDeserializer<Any?> {
 
     /**
      * - Will be set later after creation of the class isa.
@@ -44,11 +44,13 @@ class MAJsonDeserializer : JsonDeserializer<Any?> {
         val fullNameOfClazz: String? = jsonObject.optString(KEY_CLASS_FULL_NAME)
         val fullNameOfType: String? = jsonObject.optString(KEY_TYPE_FULL_NAME)
 
-        val clazz = kotlin.runCatching { Class.forName(fullNameOfClazz.orEmpty()) }.getOrNull()
+        val clazz = if (fullNameOfClazz.isNullOrEmpty()) null else {
+            kotlin.runCatching { Class.forName(fullNameOfClazz.orEmpty()) }.getOrNull()
+        }
 
         // region Object, Enum, String, Primitives
         (jsonObject.opt(KEY_OBJECT_SERIALIZATION_JSON_STRING)?.let {
-            clazz!!.kotlin.objectInstance
+            clazz!!.objectInstance()
         } ?: jsonObject.opt(KEY_ENUM_SERIALIZATION_JSON_STRING)?.let {
             val enumString = it.toString()
 
@@ -63,7 +65,7 @@ class MAJsonDeserializer : JsonDeserializer<Any?> {
             (it as String).toShort()
         } ?: jsonObject.opt(KEY_TYPE_JSON_STRING)?.let {
             MATypes.stringToType(it.toString())
-        } ?: jsonObject.optAny(KEY_SUPPORTED_TYPE_SERIALIZATION_JSON_STRING))?.also {
+        } ?: jsonObject.opt(KEY_SUPPORTED_TYPE_SERIALIZATION_JSON_STRING))?.also {
             return it
         }
         // endregion
@@ -73,15 +75,14 @@ class MAJsonDeserializer : JsonDeserializer<Any?> {
 
         return if (jsonString != null) {
             // Can be serialized via normal serialization isa.
-
             if (clazz != null) {
-                val newGson = getLibLikeGeneratedGson(clazz)
+                val newGson = getLibLikeGeneratedGson(baseType, clazz)
 
                 jsonString.fromJsonOrNullJava(clazz, newGson)
             }else {
                 val type = MATypes.stringToType(fullNameOfType!!)
 
-                val newGson = getLibLikeGeneratedGson(excludedTypesForTypeAdapters = listOf(type))
+                val newGson = getLibLikeGeneratedGson(baseType, MATypes.singleTypeForGsonExcludedTypes(type))
 
                 jsonString.fromJsonOrNullWithFullTypeInfo(type, newGson)
             }

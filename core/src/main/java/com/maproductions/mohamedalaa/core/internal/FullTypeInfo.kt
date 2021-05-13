@@ -16,7 +16,6 @@
 package com.maproductions.mohamedalaa.core.internal
 
 import com.google.gson.internal.`$Gson$Types`
-import com.maproductions.mohamedalaa.core.java.GsonConverter
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
@@ -39,12 +38,7 @@ abstract class FullTypeInfo<E> {
 
         val parameterizedType = superclass as ParameterizedType
 
-        // NOTION -> superclass represents generic type with type params even <? extends Pair> etc...
-        // canonicalize represents Type however keeps type parameters correct as well isa.
-        // BUT
-        // my own canonicalize doesn't keep ? extends while other one does it
-
-        return GsonConverter.canonicalizeOrNull(
+        return MATypes.canonicalizeOrNullAndEliminateWildcardTypes(
             parameterizedType.actualTypeArguments[0]
         ) ?: `$Gson$Types`.canonicalize(parameterizedType.actualTypeArguments[0])
     }

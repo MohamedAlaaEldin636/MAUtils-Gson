@@ -88,7 +88,6 @@ class NormalGsonConversion {
         m1.s = "new value"
         consoleInfoLn(m1.s)
 
-        // todo ezan even the no args do not use it unless above fails or throw excep balash el no args isa.
         // BUT
         /*
         To improve performance, it is best to reuse the ObjectInstantiator objects as much as possible.
@@ -105,14 +104,13 @@ class NormalGsonConversion {
         ObjenesisStd already haave cache so have static lazy ObjenesisStd instance and keep getting instantiators isa.
          */
 
-        // todo succeeded isa, but try to use ct lib directly instead of the github which puts others isa.
     }
 
     @Test
     fun wrong1() {
         // test with m1 to see if init works with
         // https://stackoverflow.com/questions/4133709/is-it-possible-in-java-to-create-blank-instance-of-class-without-no-arg-constr
-        // isa todo
+        // isa
         //sun.reflect.ReflectionFactory.getReflectionFactory
         //val vzz = ReflectionFactory().function(FunctionReference(0, )).call()
 
@@ -180,7 +178,6 @@ class NormalGsonConversion {
         println(
             gson1.toJsonOrExceptionAsString(o1)
         )
-        // todo make a library for consoleLog colors isa.
         //gson1.fieldNamingStrategy().translateName()
         println(
             gson2.toJsonOrExceptionAsString(o1)

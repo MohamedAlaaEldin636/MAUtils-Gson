@@ -15,41 +15,20 @@
 
 package com.maproductions.mohamedalaa.sample.app.model
 
-/*
-class<T>(
-     var field1: T = 4,
-     var field2: List<String> = listOf(1),
-     var field3: String = "I am string not even char sequence isa."
-)
- */
-class StrangeProperties<T> {
-
-    var v1: T? = 8 as? T
-
-    var v2: List<String> = listOf("1")
-
-    var v3: String = "I am string isa."
-
-    var v4: List<T?> = listOf(4 as? T)
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is StrangeProperties<*>) return false
-
-        if (v1 != other.v1) return false
-        if (v2 != other.v2) return false
-        if (v3 != other.v3) return false
-        if (v4 != other.v4) return false
-
-        return true
+data class StrangeProperties<T>(
+    var v1: T?,
+    var v2: List<String>,
+    var v3: String,
+    var v4: List<T?>,
+) {
+    companion object {
+        fun createInt(): StrangeProperties<Int> {
+            return StrangeProperties(
+                8,
+                listOf("1"),
+                "I am string isa.",
+                listOf(4),
+            )
+        }
     }
-
-    override fun hashCode(): Int {
-        var result = v1?.hashCode() ?: 0
-        result = 31 * result + v2.hashCode()
-        result = 31 * result + v3.hashCode()
-        result = 31 * result + v4.hashCode()
-        return result
-    }
-
 }

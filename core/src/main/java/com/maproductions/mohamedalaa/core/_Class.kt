@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
+@file:Suppress("unused")
+
 package com.maproductions.mohamedalaa.core
 
 import java.lang.reflect.Field
+import java.lang.reflect.Modifier
+import kotlin.reflect.KClass
+import android.os.Build
 
 internal fun Class<*>.declaredFieldsForSuperclassesOnly(initialList: List<Field> = emptyList()): List<Field> {
     // ignore interfaces isa. ( has no baking fields isa. )
@@ -36,5 +41,45 @@ internal fun Class<*>.getDeclaredFieldByNameSearchingSuperclassesOnly(name: Stri
     val allFields = declaredFieldsForSuperclassesOnly()
     return allFields.firstOrNull {
         it.name == name
+    }
+}
+
+/**
+ * - Takes about less than 100 ms the first time invoked.
+ *
+ * - Subsequent calls of this fun takes less than 5 ms isa.
+ *
+ * - Should be better than [Class.kotlin] + [KClass.objectInstance] as it's first invocation
+ * takes about 1 sec (1000 ms).
+ *
+ * - Note I don't know if this might make an error in future of either not detecting
+ * an object declaration as one or vice versa.
+ */
+@PublishedApi
+internal fun <E> Class<E>.objectInstance(): E? {
+    // Check is declared in kotlin code, otherwise not an object declaration isa,
+    val doesNotHaveMetaDataAnnotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        getDeclaredAnnotation(Metadata::class.java) == null
+    }else {
+        declaredAnnotations.any { it is Metadata }.not()
+    }
+    // Also check single private constructor isa.
+    if (doesNotHaveMetaDataAnnotation
+        || declaredConstructors.size != 1
+        || Modifier.isPrivate(declaredConstructors.first().modifiers).not()) {
+        return null
+    }
+
+    // Check instance of class existence isa.
+    val field = fields.firstOrNull { it.name == "INSTANCE" } ?: return null
+
+    // Check instance modifiers isa.
+    return if (Modifier.isPublic(field.modifiers)
+        && Modifier.isStatic(field.modifiers)
+        && Modifier.isFinal(field.modifiers)) {
+        @Suppress("UNCHECKED_CAST")
+        field.get(null) as? E
+    }else {
+        null
     }
 }

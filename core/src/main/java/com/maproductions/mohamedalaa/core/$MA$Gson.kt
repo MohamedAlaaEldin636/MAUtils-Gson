@@ -18,37 +18,21 @@
 
 package com.maproductions.mohamedalaa.core
 
+import androidx.annotation.RestrictTo
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
-/**
- * - Shouldn't be accessed except by the library it's in it, But for specific reason it's made public.
- */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 object `$MA$Gson` {
 
-    /**
-     * - Shouldn't be accessed except by the library it's in it, But for specific reason it's made public.
-     */
     var useDefaultGsonBuilderConfigs: Boolean = true
 
-    /**
-     * - Shouldn't be accessed except by the library it's in it, But for specific reason it's made public.
-     */
     var gsonBuilderConfigs: (GsonBuilder) -> Unit = {}
 
-    /**
-     * - Shouldn't be accessed except by the library it's in it, But for specific reason it's made public.
-     */
     var allAnnotatedClasses: List<Class<*>> = emptyList()
 
-    /**
-     * - Shouldn't be accessed except by the library it's in it, But for specific reason it's made public.
-     */
     var checkObjectDeclarationEvenIfNotAnnotated = false
 
-    /**
-     * - Shouldn't be accessed except by the library it's in it, But for specific reason it's made public.
-     */
     fun getLibUsedGson(): Gson {
         return privateGeneratedGson
     }
