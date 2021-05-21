@@ -81,7 +81,7 @@ dependencies {
 
     api(Deps.gson)
 
-    api(Deps.colored_console)
+    debugApi(Deps.colored_console)
 
     // -- Unit Testing -- //
 

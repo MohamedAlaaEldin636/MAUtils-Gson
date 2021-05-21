@@ -17,13 +17,12 @@ if (System.getenv()["JITPACK"] != true.toString()) {
     include(":sample:core")
     include(":sample:core2")
     include(":sample:core3")
-
-    include(":extensions")
 }
 
 include(":core")
 include(":annotation")
 include(":processor")
+include(":extensions")
 
 includeBuild("dependencies")
 
