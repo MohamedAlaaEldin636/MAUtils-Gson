@@ -30,7 +30,7 @@ abstract class SpecialAbstractProcessor : AbstractProcessor() {
 
     protected val delegatePrintWriter = lazy {
         kotlin.runCatching {
-            val file = File("${System.getProperty("user.dir")}\\gradle.properties")
+            val file = File("${System.getProperty("user.dir")}\\local.properties")
 
             if (file.exists().not()) {
                 processingEnv.error("File gradle.properties Not Found")
