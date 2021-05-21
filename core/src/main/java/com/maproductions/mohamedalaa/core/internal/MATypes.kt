@@ -17,6 +17,7 @@
 
 package com.maproductions.mohamedalaa.core.internal
 
+import androidx.annotation.RestrictTo
 import com.maproductions.mohamedalaa.core.checkTrue
 import java.lang.reflect.*
 
@@ -26,6 +27,7 @@ import java.lang.reflect.*
  * - Converts [Type], [ParameterizedType], [GenericArrayType], [WildcardType] & [TypeVariable]
  * to/from [String] isa.
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 object MATypes {
 
     fun typeToString(type: Type): String {

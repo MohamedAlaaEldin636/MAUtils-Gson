@@ -18,9 +18,11 @@
 
 package com.maproductions.mohamedalaa.core
 
+import androidx.annotation.RestrictTo
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 object `$MA$Gson` {
 
     var useDefaultGsonBuilderConfigs: Boolean = true

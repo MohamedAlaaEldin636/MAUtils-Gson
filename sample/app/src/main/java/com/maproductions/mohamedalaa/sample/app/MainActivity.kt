@@ -17,6 +17,7 @@ package com.maproductions.mohamedalaa.sample.app
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.annotation.IntRange
 import com.google.gson.GsonBuilder
 import com.maproductions.mohamedalaa.core.*
 import com.maproductions.mohamedalaa.sample.core.DataResult
@@ -120,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun provideError(index: Int): DataResult<UICountry> {
+    private fun provideError(@IntRange(from = 0, to = 5) index: Int): DataResult<UICountry> {
         return when (index) {
             0 -> DataResult.Error.NoInternetConnection("N")
             1 -> DataResult.Error.Unknown("")
