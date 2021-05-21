@@ -15,17 +15,14 @@
 
 package com.maproductions.mohamedalaa.core.internal
 
-import androidx.annotation.RestrictTo
 import com.google.gson.internal.`$Gson$Types`
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-@RestrictTo(RestrictTo.Scope.LIBRARY)
 inline fun <reified E> E?.getFullTypeInfo(): Type = this?.run {
     object : FullTypeInfo<E>(){}.type
 } ?: throw RuntimeException("Can't get type of `null`")
 
-@RestrictTo(RestrictTo.Scope.LIBRARY)
 abstract class FullTypeInfo<E> {
 
     val type: Type
