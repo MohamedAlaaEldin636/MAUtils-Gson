@@ -5,6 +5,11 @@
 
 Android Library built on top of [Gson](https://github.com/google/gson) to provide awesome additional capabilities and utilities.
 
+# VIP Temporary Note
+
+- As of Version `3.0.0` & above several changes have occurred, But due to being busy there is currently no time to Update README to reflect these changes,
+So please **Note** that below info in this README is only for Versions `2.0.2` & below, **And** asap I will update this README to include & explain new changes.
+
 # Contents [▴](#mautils-gson)
 
 - [Install](#install-)

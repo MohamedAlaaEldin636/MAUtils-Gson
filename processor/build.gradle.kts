@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-import com.maproductions.mohamedalaa.dependencies.Groups
-import com.maproductions.mohamedalaa.dependencies.Deps
-import com.maproductions.mohamedalaa.dependencies.dirLibsIncludeJar
+import com.maproductions.mohamedalaa.dependencies.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -35,13 +33,13 @@ dependencies {
 
     implementation(Deps.kotlin.stdlib_jdk8)
 
-    implementation(Deps.kotlin_poet)
-    implementation("com.squareup:kotlinpoet-metadata:1.6.0")
-    implementation("com.squareup:kotlinpoet-metadata-specs:1.6.0")
+    implementation(Deps.squareup.kotlinpoet)
+    implementation(Deps.squareup.kotlinpoet_metadata)
+    implementation(Deps.squareup.kotlinpoet_metadata_specs)
 
     implementation(Deps.kotlinx.metadata)
 
-    implementation("org.reflections:reflections:0.9.12")
+    implementation(Deps.org_reflection.reflections)
 }
 
 java {
@@ -51,3 +49,9 @@ java {
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = Versions.jvm_1_8
+    }
+}

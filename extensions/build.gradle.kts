@@ -22,14 +22,16 @@ plugins {
     kotlin("android")
 
     kotlin("kapt")
+
+    id("com.github.dcendents.android-maven")
 }
+
+group = Groups.github
 
 android {
 
     compileSdkVersion(Versions.compile_sdk)
     buildToolsVersion(Versions.build_tools)
-
-    testOptions.unitTests.isIncludeAndroidResources = true
 
     defaultConfig {
         minSdkVersion(Versions.min_sdk)
@@ -43,8 +45,6 @@ android {
 
         testInstrumentationRunner = Const.test_instrumentation_runner
         consumerProguardFiles(Const.consumer_proguard_files)
-
-        multiDexEnabled = true
     }
 
     buildTypes {
@@ -69,23 +69,18 @@ android {
 }
 
 dependencies {
+    api(fileTree(dirLibsIncludeJar()))
+
     api(project(Deps.own_libs.core))
 
-    api(project(Deps.own_libs.annotation))
+    api(Deps.androidx.lifecycle.saved_state)
 
-    api("androidx.multidex:multidex:2.0.1")
-
-    kapt(project(Deps.own_libs.processor))
-
-    /*
-        <groupId>de.ruedigermoeller</groupId>
-        <artifactId>fst</artifactId>
-        <version>2.48-jdk-6</version>
-    </dependency>
-     */
-    //api("de.ruedigermoeller:fst:2.48-jdk-6")
+    // -- Unit Testing -- //
 
     testImplementation(project(Deps.own_libs.core, Const.integrate_test_implementations))
+
+    // -- Instrumental Testing -- //
+
     androidTestImplementation(project(Deps.own_libs.core, Const.integrate_android_test_implementations))
 }
 

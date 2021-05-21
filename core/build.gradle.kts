@@ -15,6 +15,8 @@
 
 import com.maproductions.mohamedalaa.dependencies.*
 import com.maproductions.mohamedalaa.dependencies.Deps
+import com.maproductions.mohamedalaa.dependencies.dirLibsIncludeJar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.android.library")
@@ -69,8 +71,7 @@ android {
 }
 
 dependencies {
-    // Can be excluded if processor won't be used.
-    api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    api(fileTree(dirLibsIncludeJar()))
 
     api(project(Deps.own_libs.annotation))
 
@@ -80,12 +81,9 @@ dependencies {
 
     api(Deps.gson)
 
-    api("androidx.annotation:annotation:1.2.0")
-    //lintPublish("androidx.annotation:annotation:1.2.0")
+    api(Deps.androidx.annotation.annotation)
 
     debugApi(Deps.colored_console)
-
-    //api("de.ruedigermoeller:fst:2.48-jdk-6")
 
     // -- Unit Testing -- //
 
@@ -108,6 +106,12 @@ dependencies {
 
     //androidTestImplementation(Deps.androidx.test.junit)
     androidTestImplementation(Deps.androidx.test.espresso.core)
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = Versions.jvm_1_8
+    }
 }
 
 val integrateTestImplementations: Configuration by configurations.creating {

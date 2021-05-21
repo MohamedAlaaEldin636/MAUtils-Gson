@@ -18,6 +18,7 @@
 
 package com.maproductions.mohamedalaa.core.java
 
+import androidx.annotation.RestrictTo
 import com.google.gson.Gson
 import com.google.gson.internal.`$Gson$Types`
 import com.maproductions.mohamedalaa.core.*
@@ -116,6 +117,9 @@ fun <E> String?.fromJsonOrNullJava(elementClass: Class<E>, gson: Gson? = null): 
 
 /**
  * ### CAUTION
+ *
+ * - Currently java consumer code is NOT supported, Check out GitHub README of this library isa.
+ *
  * - Should be used only for java consumer code, Not for kotlin consumer code which instead should
  * use [fromJsonOrNull], [fromJson], [toJsonOrNull] OR [toJson] isa.
  *
@@ -143,6 +147,7 @@ fun <E> String?.fromJsonOrNullJava(elementClass: Class<E>, gson: Gson? = null): 
  *
  * @param E type to convert to/from JSON String.
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY) // Since the library currently does NOT support java consumer code
 abstract class GsonConverter<E>(private val gson: Gson? = null) {
 
     internal companion object;

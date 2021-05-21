@@ -5,6 +5,13 @@
       <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="dependencies" target="11" />
+      <module name="MAUtils_Gson.core" target="11" />
+      <module name="MAUtils_Gson.extensions" target="11" />
+      <module name="MAUtils_Gson.sample.app" target="11" />
+      <module name="MAUtils_Gson.sample.core" target="11" />
+      <module name="MAUtils_Gson.sample.core2" target="11" />
+      <module name="MAUtils_Gson.sample.core3" target="11" />
       <module name="mautils_gson_core" target="1.7" />
       <module name="mautils_gson_core_annotation" target="1.7" />
       <module name="mautils_gson_core_processor" target="1.7" />

@@ -16,7 +16,6 @@
 import com.maproductions.mohamedalaa.dependencies.Groups
 import com.maproductions.mohamedalaa.dependencies.Deps
 import com.maproductions.mohamedalaa.dependencies.Versions
-import com.maproductions.mohamedalaa.dependencies.dirLibsIncludeJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -30,8 +29,6 @@ plugins {
 group = Groups.github
 
 dependencies {
-    implementation(fileTree(dirLibsIncludeJar()))
-
     implementation(Deps.kotlin.stdlib_jdk8)
 }
 
@@ -42,3 +39,9 @@ java {
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions.jvmTarget = Versions.jvm_1_8
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = Versions.jvm_1_8
+    }
+}

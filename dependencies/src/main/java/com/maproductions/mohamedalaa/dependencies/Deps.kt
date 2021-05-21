@@ -30,13 +30,15 @@ object Deps {
 
     val kotlinx = Kotlinx
 
+    val squareup = Squareup
+
+    val org_reflection = OrgReflection
+
     const val gson = "com.google.code.gson:gson:${Versions.gson}"
 
     const val material = "com.google.android.material:material:${Versions.material}"
 
     const val timber = "com.jakewharton.timber:timber:${Versions.timber}"
-
-    const val kotlin_poet = "com.squareup:kotlinpoet:${Versions.kotlin_poet}"
 
     const val colored_console = "com.github.MohamedAlaaEldin636:Colored-Console:${Versions.colored_console}"
 
@@ -47,6 +49,22 @@ object Deps {
     const val robolectric = "org.robolectric:robolectric:${Versions.test_robolectric}"
 
     // ---- Groups (might include testing as well isa) ---- //
+
+    object OrgReflection : BaseGroup() {
+        override val name: String
+            get() = "org.reflections"
+
+        val reflections = lib("reflections", Versions.org_reflections)
+    }
+
+    object Squareup : BaseGroup() {
+        override val name: String
+            get() = "com.squareup"
+
+        val kotlinpoet = lib("kotlinpoet", Versions.kotlin_poet)
+        val kotlinpoet_metadata = lib("kotlinpoet-metadata", Versions.kotlin_poet)
+        val kotlinpoet_metadata_specs = lib("kotlinpoet-metadata-specs", Versions.kotlin_poet)
+    }
 
     object Kotlinx : BaseGroup() {
         override val name: String
@@ -61,11 +79,25 @@ object Deps {
 
         val test = Test()
 
+        val annotation = Annotation()
+
         val core = Core()
 
         val app_compat = AppCompat()
 
         val constraint_layout = ConstraintLayout()
+
+        val lifecycle = Lifecycle()
+
+        inner class Lifecycle internal constructor() : SameVersionBaseGroup() {
+            override val name: String
+                get() = "${this@Androidx.name}.lifecycle"
+
+            override val version: String
+                get() = Versions.androidx_lifecycle
+
+            val saved_state = lib("lifecycle-viewmodel-savedstate")
+        }
 
         inner class Core : BaseGroup() {
             override val name: String
@@ -120,6 +152,14 @@ object Deps {
 
                 val junit = lib("junit", "1.1.2")
             }
+
+        }
+
+        inner class Annotation : BaseGroup() {
+            override val name: String
+                get() = "${this@Androidx.name}.annotation"
+
+            val annotation = lib("annotation", Versions.test_androidx_annotation)
 
         }
 

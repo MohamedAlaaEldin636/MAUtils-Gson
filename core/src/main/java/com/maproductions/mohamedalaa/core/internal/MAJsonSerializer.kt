@@ -220,18 +220,22 @@ internal class MAJsonSerializer(private val baseType: Type) : JsonSerializer<Any
      */
     private fun JSONObject.fill(src: Any) {
         for (field in src.getClassDeclaredFieldsAndSuperclassesDeclaredFields()) {
-            val isAccessible = field.isAccessible
-            field.isAccessible = true
+            try {
+                val isAccessible = field.isAccessible
+                field.isAccessible = true
 
-            val fieldInstance: Any? = kotlin.runCatching { field.get(src) }.getOrNull()
+                val fieldInstance: Any? = kotlin.runCatching { field.get(src) }.getOrNull()
 
-            val key = nonNullUsedGson.getJsonKey(field)
+                val key = nonNullUsedGson.getJsonKey(field)
 
-            val jsonObject = innerSerialize(fieldInstance, field.type, field.genericType)
+                val jsonObject = innerSerialize(fieldInstance, field.type, field.genericType)
 
-            field.isAccessible = isAccessible
+                field.isAccessible = isAccessible
 
-            putOrThrow(key, jsonObject)
+                putOrThrow(key, jsonObject)
+            }catch (throwable: Throwable) {
+                // Do nothing isa.
+            }
         }
     }
 

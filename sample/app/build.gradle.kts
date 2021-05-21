@@ -14,6 +14,7 @@
  */
 
 import com.maproductions.mohamedalaa.dependencies.*
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.android.application")
@@ -93,6 +94,12 @@ dependencies {
 
     testImplementation(project(Deps.own_libs.core, Const.integrate_test_implementations))
     androidTestImplementation(project(Deps.own_libs.core, Const.integrate_android_test_implementations))
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = Versions.jvm_1_8
+    }
 }
 
 /*tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {

@@ -130,7 +130,7 @@ class TimeMeasuring : BaseGsonTest() {
         }
 
         // instance of subclass (object) of annotated class with specifying the ann class in .toJson
-        timeOf(100) {
+        timeOf(200) {
             json = Core3SealedClass.Object1.toJson<Core3SealedClass>()
             from = json.fromJson<Core3SealedClass>()
             assertEquals(from, Core3SealedClass.Object1)

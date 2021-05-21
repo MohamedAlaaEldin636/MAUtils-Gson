@@ -43,7 +43,7 @@ open class BaseGsonTest {
         @JvmStatic
         @BeforeClass
         fun appSetups() {
-            timeOf(400) {
+            timeOf(750) {
                 MAGson.setup()
                 MAGson.getLibUsedGson()
             }

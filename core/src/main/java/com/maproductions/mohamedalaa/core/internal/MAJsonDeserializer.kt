@@ -49,23 +49,30 @@ class MAJsonDeserializer(private val baseType: Type) : JsonDeserializer<Any?> {
         }
 
         // region Object, Enum, String, Primitives
-        (jsonObject.opt(KEY_OBJECT_SERIALIZATION_JSON_STRING)?.let {
-            clazz!!.objectInstance()
-        } ?: jsonObject.opt(KEY_ENUM_SERIALIZATION_JSON_STRING)?.let {
+        jsonObject.opt(KEY_OBJECT_SERIALIZATION_JSON_STRING)?.also {
+            return clazz!!.objectInstance()
+        }
+        jsonObject.opt(KEY_ENUM_SERIALIZATION_JSON_STRING)?.also {
             val enumString = it.toString()
 
-            clazz!!.enumConstants!!.first { enum -> enum.toString() == enumString }
-        } ?: jsonObject.opt(KEY_FLOAT_SERIALIZATION_JSON_STRING)?.let {
-            (it as String).toFloat()
-        } ?: jsonObject.opt(KEY_CHAR_SERIALIZATION_JSON_STRING)?.let {
-            (it as String).single()
-        } ?: jsonObject.opt(KEY_BYTE_SERIALIZATION_JSON_STRING)?.let {
-            (it as String).toByte()
-        } ?: jsonObject.opt(KEY_SHORT_SERIALIZATION_JSON_STRING)?.let {
-            (it as String).toShort()
-        } ?: jsonObject.opt(KEY_TYPE_JSON_STRING)?.let {
-            MATypes.stringToType(it.toString())
-        } ?: jsonObject.opt(KEY_SUPPORTED_TYPE_SERIALIZATION_JSON_STRING))?.also {
+            return clazz!!.enumConstants!!.first { enum -> enum.toString() == enumString }
+        }
+        jsonObject.opt(KEY_FLOAT_SERIALIZATION_JSON_STRING)?.also {
+            return (it as String).toFloat()
+        }
+        jsonObject.opt(KEY_CHAR_SERIALIZATION_JSON_STRING)?.also {
+            return (it as String).single()
+        }
+        jsonObject.opt(KEY_BYTE_SERIALIZATION_JSON_STRING)?.also {
+            return (it as String).toByte()
+        }
+        jsonObject.opt(KEY_SHORT_SERIALIZATION_JSON_STRING)?.also {
+            return (it as String).toShort()
+        }
+        jsonObject.opt(KEY_TYPE_JSON_STRING)?.also {
+            return MATypes.stringToType(it.toString())
+        }
+        jsonObject.opt(KEY_SUPPORTED_TYPE_SERIALIZATION_JSON_STRING)?.also {
             return it
         }
         // endregion
@@ -101,20 +108,24 @@ class MAJsonDeserializer(private val baseType: Type) : JsonDeserializer<Any?> {
 
     private fun Any.fill(fieldsJsonObject: JSONObject) {
         for (field in getClassDeclaredFieldsAndSuperclassesDeclaredFields()) {
-            val isAccessible = field.isAccessible
-            field.isAccessible = true
+            try {
+                val isAccessible = field.isAccessible
+                field.isAccessible = true
 
-            val key = nonNullUsedGson.getJsonKey(field)
+                val key = nonNullUsedGson.getJsonKey(field)
 
-            val fieldJsonObject = fieldsJsonObject.optJSONObject(key)
+                val fieldJsonObject = fieldsJsonObject.optJSONObject(key)
 
-            if (fieldJsonObject != null) {
-                kotlin.runCatching {
-                    field.set(this, innerDeserialize(fieldJsonObject))
+                if (fieldJsonObject != null) {
+                    kotlin.runCatching {
+                        field.set(this, innerDeserialize(fieldJsonObject))
+                    }
                 }
-            }
 
-            field.isAccessible = isAccessible
+                field.isAccessible = isAccessible
+            }catch (throwable: Throwable) {
+                // Do nothing isa.
+            }
         }
     }
 

@@ -26,3 +26,4 @@ include(":processor")
 includeBuild("dependencies")
 
 rootProject.name = "MAUtils Gson"
+include(":extensions")

@@ -28,11 +28,13 @@ object Versions {
 
     const val jvm_1_8 = "1.8"
 
-    const val kotlin = "1.4.32"
+    const val kotlin = "1.5.0"
 
     const val gson = "2.8.6"
 
     const val timber = "4.7.1"
+
+    const val androidx_lifecycle = "2.3.1"
 
     const val material = "1.3.0"
 
@@ -48,10 +50,13 @@ object Versions {
 
     const val androidx_constraint_layout = "2.0.4"
 
+    const val org_reflections = "0.9.12"
+
     // ---- Testing ---- //
 
     const val test_junit = "4.13.1"
     const val test_androidx_core = "1.3.0"
+    const val test_androidx_annotation = "1.2.0"
     const val test_androidx_junit = "1.1.2"
     const val test_androidx_espresso = "3.3.0"
     const val test_robolectric = "4.4"
