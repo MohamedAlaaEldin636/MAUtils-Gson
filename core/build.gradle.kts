@@ -83,7 +83,7 @@ dependencies {
 
     api(Deps.androidx.annotation.annotation)
 
-    debugApi(Deps.colored_console)
+    api(Deps.colored_console)
 
     // -- Unit Testing -- //
 

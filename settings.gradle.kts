@@ -22,8 +22,8 @@ if (System.getenv()["JITPACK"] != true.toString()) {
 include(":core")
 include(":annotation")
 include(":processor")
+include(":extensions")
 
 includeBuild("dependencies")
 
 rootProject.name = "MAUtils Gson"
-include(":extensions")
